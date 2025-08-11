@@ -6,6 +6,7 @@ body {
 }
 
 ul {
+    display:flex;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -13,8 +14,9 @@ ul {
     overflow: hidden;
 }
 
-li {
-    float: left;
+a svg:hover{
+    animation-name: example;
+  animation-duration: 1s;
 }
 
 li a {
@@ -25,6 +27,11 @@ li a {
     text-decoration: none;
 }
 
+
 li a:hover {
     color: #ff9900;
+}
+@keyframes example {
+  from {height:12px; width:12px;}
+  to {height:14px; width:14px;}
 }

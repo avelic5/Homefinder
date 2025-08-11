@@ -19,8 +19,8 @@ iframe {
 }
 
 .grid-lista-nekretnina {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, 300px);
+    display: flex;
+    flex-wrap:wrap;
     gap: 20px;
     padding: 20px;
     justify-content: center;
