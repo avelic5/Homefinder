@@ -1,0 +1,109 @@
+/* Osnovni stilovi */
+body {
+    background-color: #fdf1d3;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+/* Header i iframe meni */
+header iframe {
+    border: none;
+    width: 100%;
+    height: 50px;
+}
+
+/* Glavni sadržaj */
+.glavniSadrzaj {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+/* Glavna vijest - zauzima cijelu širinu, istaknuta */
+.glavnaVijest {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
+}
+
+.glavnaVijest h2 {
+    margin-top: 0;
+    color: #004d40;
+}
+
+.glavnaVijest img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 10px;
+    border-radius: 8px;
+}
+
+/* Sekcija sa visokim vijestima */
+.vijestiVisoke {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.visokaVijest {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.08);
+    border-left: 5px solid #009688;
+}
+
+.visokaVijest h3 {
+    margin-top: 0;
+    color: #00796b;
+}
+
+/* Sekcija sa kvadratnim vijestima */
+.vijestiKvadratne {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.kvadratnaVijest {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.06);
+    border: 1px solid #ddd;
+    transition: box-shadow 0.3s ease;
+}
+
+.kvadratnaVijest:hover {
+    box-shadow: 0 6px 12px rgb(0 0 0 / 0.15);
+}
+
+.kvadratnaVijest h3 {
+    margin-top: 0;
+    color: #004d40;
+}
+
+/* Paragrafi */
+.vijest p {
+    line-height: 1.5;
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Responsive za manje ekrane */
+@media (max-width: 700px) {
+    .glavniSadrzaj {
+        padding: 0 10px;
+    }
+    .vijestiVisoke,
+    .vijestiKvadratne {
+        grid-template-columns: 1fr;
+    }
+}
