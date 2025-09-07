@@ -1,73 +1,56 @@
 import StatistikaNekretnina from "./StatistikaNekretnina.js";
+import { listaNekretnina, listaKorisnika } from "./podaci.js"; // tvoji realni podaci
 
-// Kreiramo instancu statistike
-const statistika = StatistikaNekretnina();
-
-// --------------------------
-// Primjer inicijalnih podataka (izvuci iz HTML-a ili definiraj statički)
-// Ovo su primjer objekti koji odgovaraju strukturi koju koristi SpisakNekretnina
-// Moraju imati: tip_nekretnine, kvadratura, cijena, godinaObjave, upiti
-// Upiti su niz objekata sa svojstvom korisnik
-const nekretnine = [
-    { id: 1, tip_nekretnine: "stan", kvadratura: 80, cijena: 100000, godinaObjave: 2005, upiti: [{ korisnik: "user1" }] },
-    { id: 2, tip_nekretnine: "kuca", kvadratura: 150, cijena: 200000, godinaObjave: 2015, upiti: [{ korisnik: "user2" }] },
-    { id: 3, tip_nekretnine: "pp", kvadratura: 200, cijena: 300000, godinaObjave: 2020, upiti: [] }
-];
-
-// Inicijaliziramo statistiku
-statistika.init(nekretnine, []);
-
-// Funkcija koja se poziva klikom na dugme
 function iscrtajHistogram() {
-    const periodOd = parseInt(document.getElementById("period-pocetak").value);
-    const periodDo = parseInt(document.getElementById("period-kraj").value);
-    const cijenaOd = parseInt(document.getElementById("cijena-pocetak").value);
-    const cijenaDo = parseInt(document.getElementById("cijena-kraj").value);
+    let periodOd = parseInt(document.getElementById("period-pocetak").value);
+    let periodDo = parseInt(document.getElementById("period-kraj").value);
+    let cijenaOd = parseInt(document.getElementById("cijena-pocetak").value);
+    let cijenaDo = parseInt(document.getElementById("cijena-kraj").value);
 
-    // Kreiramo periode i raspon cijena
-    const periodi = [{ od: periodOd, do: periodDo }];
-    const rasponiCijena = [{ od: cijenaOd, do: cijenaDo }];
+    let periodi = [
+        { od: periodOd, do: Math.floor((periodOd + periodDo) / 2) },
+        { od: Math.floor((periodOd + periodDo) / 2) + 1, do: periodDo }
+    ];
+    let rasponi = [
+        { od: cijenaOd, do: Math.floor((cijenaOd + cijenaDo) / 2) },
+        { od: Math.floor((cijenaOd + cijenaDo) / 2) + 1, do: cijenaDo }
+    ];
 
-    // Dohvatimo histogram
-    const podaci = statistika.histogramCijena(periodi, rasponiCijena);
+    let statistika = StatistikaNekretnina();
+    statistika.init(listaNekretnina, listaKorisnika);
 
-    // Očistimo container za chart
-    const container = document.getElementById("chartContainer");
-    container.innerHTML = "";
+    let rezultat = statistika.histogramCijena(periodi, rasponi);
 
-    // Kreiramo canvas element za Chart.js
-    const canvas = document.createElement("canvas");
-    container.appendChild(canvas);
+    // očisti prije crtanja
+    document.getElementById("chartContainer").innerHTML = "";
 
-    // Transformacija podataka za Chart.js
-    const xOsa = podaci.map(d => `Period ${d.indeksPerioda} / Cijena ${d.indeksRasponaCijena}`);
-    const yOsa = podaci.map(d => d.brojNekretnina);
+    periodi.forEach((p, i) => {
+        let canvas = document.createElement("canvas");
+        document.getElementById("chartContainer").appendChild(canvas);
 
-    // Iscrtavanje Chart.js bar charta
-    new Chart(canvas.getContext("2d"), {
-        type: 'bar',
-        data: {
-            labels: xOsa,
-            datasets: [{
-                label: 'Broj nekretnina',
-                data: yOsa,
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                title: { display: true, text: 'Histogram nekretnina po periodu i cijeni' }
+        let dataZaPeriod = rezultat.filter(r => r.indeksPerioda === i);
+
+        new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: dataZaPeriod.map((r, j) => `Cijena ${j + 1}`),
+                datasets: [{
+                    label: `Period ${p.od}-${p.do}`,
+                    data: dataZaPeriod.map(r => r.brojNekretnina),
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                }]
             },
-            scales: {
-                y: { beginAtZero: true }
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Histogram nekretnina ${p.od}-${p.do}`
+                    }
+                }
             }
-        }
+        });
     });
 }
 
-// Dodavanje event listenera
 document.getElementById("iscrtaj").addEventListener("click", iscrtajHistogram);
