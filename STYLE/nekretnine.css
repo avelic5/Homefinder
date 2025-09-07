@@ -6,75 +6,94 @@ body {
 }
 
 iframe {
-    border: none; 
+    border: none;
     width: 100%;
-    height: 50px;
+    height: 60px; /* malo veći meni */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .tip-nekretnine {
     text-align: center;
     font-weight: bold;
-    font-size: 24px;
-    margin: 20px 0;
+    font-size: 28px;
+    margin: 30px 0 10px 0;
+    color: #333;
 }
 
 .grid-lista-nekretnina {
     display: flex;
-    flex-wrap:wrap;
+    flex-wrap: wrap;
     gap: 20px;
     padding: 20px;
     justify-content: center;
-    /* Centriranje po horizontali */
-    align-content: center;
-    /* Centriranje po vertikali */
 }
 
 .nekretnina {
-    border: 2px solid #000;
-    padding: 30px;
+    border: 1px solid #ccc;
+    padding: 15px;
     background-color: white;
     text-align: center;
-    max-width: 300px;
-    height: 400px;
+    width: 250px;
+    height: auto;
+    border-radius: 10px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.nekretnina:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
 
 .nekretnina.kuca {
-    background-color: powderblue;
+    background-color: #d0e7ff;
 }
 
 .nekretnina.pp {
-    background-color: green;
+    background-color: #c6f0d6;
 }
 
 .slika-nekretnine {
-    max-width: 100%;
-    height: 50%;
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
 }
 
 .detalji-nekretnine {
     text-align: left;
+    margin-bottom: 10px;
 }
 
 .detalji-nekretnine h3 {
-    margin: 0;
-    white-space: nowrap;
+    margin: 0 0 5px 0;
+    font-size: 18px;
 }
 
 .detalji-nekretnine p {
-    margin: 5px 0;
+    margin: 2px 0;
+    font-size: 14px;
 }
 
 .cijena-nekretnine {
     text-align: right;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 10px;
 }
 
 .detalji-dugme {
-    margin: 20px auto;
+    display: inline-block;
+    margin: 0 auto;
     background-color: #ff9900;
     color: white;
     padding: 10px 20px;
     text-decoration: none;
-    border: none;
     border-radius: 5px;
-    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.detalji-dugme:hover {
+    background-color: #e68a00;
 }
