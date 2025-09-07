@@ -63,3 +63,20 @@ h1{
     width: 400px;
     height: 300px;
 }
+
+iframe {
+    border: none;
+    width: 100%;
+    height: 60px; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+@media (max-width:800px){
+    iframe{
+height:120px;
+    }
+}
+@media (max-width:500px){
+    iframe{
+height:180px;
+    }
+}
