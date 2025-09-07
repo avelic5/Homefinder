@@ -1,9 +1,9 @@
 /* common styling za cijelu stranicu */
 body {
+    background-color: #fdf1d3;
     font-family: Arial, sans-serif;
-    margin: 20px;
-    background-color: #f5f5f5;
-    color: #333;
+    margin: 0;
+    padding: 0;
 }
 
 /* Styling za formu unosa perioda i cijena */

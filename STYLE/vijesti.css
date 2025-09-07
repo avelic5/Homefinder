@@ -1,85 +1,90 @@
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fdf1d3; /* tvoja tražena pozadina */
+    color: #333;
+}
+
+/* glavni grid */
 .glavniSadrzaj {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    padding: 20px;
 }
 
+/* zajednički stil za sve vijesti */
 .vijest {
     box-sizing: border-box;
-    padding: 10px;
-    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 12px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+iframe {
+  display: block;
+  width: 100%;
+  height:50px;
+ 
 }
 
+
+.vijest:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+}
+
+/* naslov vijesti */
+.vijest h2 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    color: #444;
+}
+
+.vijest p {
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* glavna vijest */
 .glavnaVijest {
     grid-column: span 4;
     aspect-ratio: 2 / 1;
-    background-color: #77f;
+    background-color: #f9e0ae; /* pastelna žuta */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .glavnaVijest img {
     width: 80%;
-    height: 80%;
+    aspect-ratio: 2 / 1;
+   
+    border-radius: 8px;
+    margin-top: 10px;
     object-fit: cover;
 }
 
+/* visoka vijest */
 .visokaVijest {
     grid-column: span 1;
     grid-row: span 2;
     aspect-ratio: 1 / 2;
-    background-color: #ff7;
+    background-color: #d1e7dd; /* svijetla zelena */
 }
 
+/* kvadratna vijest */
 .kvadratnaVijest {
     grid-column: span 1;
     aspect-ratio: 1 / 1;
-    background-color: #f77;
+    background-color: #cfe2ff; /* svijetlo plava */
 }
 
+/* responsive dio */
 @media (max-width: 800px) {
-    #glavnaVijest1 {
-        grid-area: glavnaVijest1;
-    }
-
-    #visokaVijest1 {
-        grid-area: visokaVijest1;
-    }
-
-    #visokaVijest2 {
-        grid-area: visokaVijest2;
-    }
-
-    #kvadratnaVijest1 {
-        grid-area: kvadratnaVijest1;
-    }
-
-    #kvadratnaVijest2 {
-        grid-area: kvadratnaVijest2;
-    }
-
-    #kvadratnaVijest3 {
-        grid-area: kvadratnaVijest3;
-    }
-
-    #kvadratnaVijest4 {
-        grid-area: kvadratnaVijest4;
-    }
-
-    #kvadratnaVijest5 {
-        grid-area: kvadratnaVijest5;
-    }
-
-    #kvadratnaVijest6 {
-        grid-area: kvadratnaVijest6;
-    }
-
-    #kvadratnaVijest7 {
-        grid-area: kvadratnaVijest7;
-    }
-
-    #kvadratnaVijest8 {
-        grid-area: kvadratnaVijest8;
-    }
-
     .glavniSadrzaj {
         grid-template-columns: repeat(2, 1fr);
         grid-template-areas: 
@@ -92,14 +97,12 @@
         'kvadratnaVijest7 kvadratnaVijest8'
         'visokaVijest3 visokaVijest4'
         'visokaVijest3 visokaVijest4';
+        gap: 10px;
+        padding: 10px;
     }
 
     .glavnaVijest {
         grid-column: span 2;
         aspect-ratio: 1 / 1;
-    }
-
-    .visokaVijest {
-        grid-column: span 1;
     }
 }

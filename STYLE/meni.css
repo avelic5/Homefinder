@@ -5,33 +5,48 @@ body {
     padding: 0;
 }
 
+/* Glavni meni */
 ul {
-    display:flex;
+    display: flex;
     list-style: none;
     margin: 0;
     padding: 0;
     background-color: #333;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    border-radius: 0 0 12px 12px;
     overflow: hidden;
 }
 
-a svg:hover{
-    animation-name: example;
-  animation-duration: 1s;
-}
-
+/* Linkovi u meniju */
 li a {
-    display: block;
+    display: flex;
+    align-items: center; /* vertikalno centriranje */
+    justify-content: center;
     color: white;
     text-align: center;
-    padding: 14px 16px;
+    padding: 14px 20px;
     text-decoration: none;
+    transition: color 0.3s ease, transform 0.2s ease;
+    border-radius: 4px;
+    gap: 8px; /* razmak između ikone i teksta */
 }
 
 
+/* Hover efekat za linkove */
 li a:hover {
     color: #ff9900;
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
+
+/* Hover animacija za svg unutar linka */
+li a svg:hover {
+    animation-name: example;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
 @keyframes example {
-  from {height:12px; width:12px;}
-  to {height:14px; width:14px;}
+    from { transform: scale(1); }
+    to { transform: scale(1.3); }
 }
