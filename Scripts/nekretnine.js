@@ -5,7 +5,8 @@ function spojiNekretnine(divReferenca, instancaModula, tip_nekretnine) {
     // iscrtavanje elemenata u divReferenca element
 
     // Ciscenje svih elemenata liste
-    divReferenca.innerHTML = '';
+    
+    divReferenca.innerHTML = ' ';
 
     if (filtriraneNekretnine.length === 0) {
         divReferenca.innerHTML = '<p>Trenutno nema dostupnih nekretnina ovoga tipa.</p>';
@@ -55,7 +56,7 @@ function spojiNekretnine(divReferenca, instancaModula, tip_nekretnine) {
 }
 
 
-const listaNekretnina = [{
+var listaNekretnina = [{
     id: 1,
     tip_nekretnine: "Stan",
     naziv: "Useljiv stan Sarajevo",
@@ -165,7 +166,7 @@ const listaNekretnina = [{
     ]
 }]
 
-const listaKorisnika = [{
+var listaKorisnika = [{
     id: 1,
     ime: "Neko",
     prezime: "Nekic",

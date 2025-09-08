@@ -1,4 +1,3 @@
-/* common styling za cijelu stranicu */
 body {
     background-color: #fdf1d3;
     font-family: Arial, sans-serif;
@@ -6,37 +5,45 @@ body {
     padding: 0;
 }
 
-/* Styling za formu unosa perioda i cijena */
-label {
-    font-weight: bold;
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
 }
 
-input[type="text"],
+#centriraj {
+    width: 90%;
+    max-width: 600px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+label {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
 input[type="number"] {
     width: 100px;
     padding: 5px;
-    margin: 5px;
+    margin: 5px 10px 5px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
 button {
-    padding: 8px 16px;
-    margin-top: 10px;
+    padding: 10px 20px;
     background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
-}
-#centriraj{
-    width:100%;
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    
+    transition: background-color 0.3s;
 }
 
 button:hover {
@@ -48,35 +55,33 @@ button:hover {
     display: flex;
     flex-wrap: wrap;
     gap: 30px;
-    margin-top: 20px;
-    width:50%;
+    justify-content: center;
+    margin: 20px auto;
+    width: 100%;
 }
-h1{
-    text-align:center;
-}
+
 /* Svaki canvas za graf */
 #chartContainer canvas {
     background-color: white;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 10px;
-    width: 400px;
-    height: 300px;
+    width: 400px;  /* fiksna širina */
+    height: 300px; /* fiksna visina */
 }
 
 iframe {
     border: none;
     width: 100%;
-    height: 60px; 
+    height: 60px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
 }
-@media (max-width:800px){
-    iframe{
-height:120px;
-    }
+
+@media (max-width: 800px) {
+    iframe { height: 120px; }
 }
-@media (max-width:500px){
-    iframe{
-height:180px;
-    }
+
+@media (max-width: 500px) {
+    iframe { height: 180px; }
 }
