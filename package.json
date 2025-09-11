@@ -1,0 +1,24 @@
+{
+  "name": "homefinder",
+  "version": "1.0.0",
+  "description": "a project for finding a home",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avelic5/Homefinder.git"
+  },
+  "author": "Aldin Velic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/avelic5/Homefinder/issues"
+  },
+  "homepage": "https://github.com/avelic5/Homefinder#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3"
+  }
+}
