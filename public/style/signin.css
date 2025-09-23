@@ -1,0 +1,109 @@
+body {
+    background-color: #fdf1d3;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+iframe {
+    border: none;
+    width: 100%;
+    height: 60px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.user-profil {
+    width: 40%;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: #6d675a;
+    border: 2px solid #8a8a8a;
+    border-radius: 12px;
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 20px;
+    color: white;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+/* responsive */
+@media screen and (max-width: 750px) {
+    .user-profil {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .user-slika {
+        margin: 0 auto 20px auto;
+    }
+}
+
+.user-slika {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #fff;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.user-profil p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+/* Label + input u redu */
+.form-grupa {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+label {
+    font-weight: bold;
+    font-size: 14px;
+    color: #f0eae0;
+}
+label{
+    display:block;
+}
+input[type="text"],
+input[type="password"] {
+    width: 50%;
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #ff9900;
+    box-shadow: 0 0 5px rgba(255,153,0,0.5);
+}
+
+button {
+    width: 40%;
+    padding: 12px;
+    margin-top: 15px;
+    background-color: #ff9900;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #e68a00;
+}

@@ -1,3 +1,4 @@
+/* Body i osnovno */
 body {
     background-color: #fdf1d3;
     font-family: Arial, sans-serif;
@@ -5,6 +6,7 @@ body {
     padding: 0;
 }
 
+/* Iframe (meni) */
 iframe {
     border: none;
     width: 100%;
@@ -12,70 +14,26 @@ iframe {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.user-profil {
-    width: 40%;
-    margin: 30px auto;
+/* Centrirana forma za login */
+#formaDugme {
+    width: 35%;
+    margin: 50px auto;
     padding: 30px;
     background-color: #6d675a;
     border: 2px solid #8a8a8a;
     border-radius: 12px;
-    display: grid;
-    grid-template-columns: 150px 1fr;
-    gap: 20px;
-    color: white;
     box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-}
-
-/* responsive */
-@media screen and (max-width: 750px) {
-    .user-profil {
-        grid-template-columns: 1fr;
-        text-align: center;
-    }
-
-    .user-slika {
-        margin: 0 auto 20px auto;
-    }
-}
-
-.user-slika {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 3px solid #fff;
-}
-
-.user-info {
+    color: white;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 15px;
 }
 
-.user-profil p {
-    margin: 0;
-    font-size: 15px;
-    line-height: 1.4;
-}
-
-/* Label + input u redu */
-.form-grupa {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-label {
-    font-weight: bold;
-    font-size: 14px;
-    color: #f0eae0;
-}
-label{
-    display:block;
-}
+/* Input polja */
 input[type="text"],
 input[type="password"] {
-    width: 50%;
+    width: 80%;
     padding: 10px;
     font-size: 15px;
     border: 1px solid #ccc;
@@ -84,16 +42,27 @@ input[type="password"] {
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 
+/* Fokus inputa */
 input[type="text"]:focus,
 input[type="password"]:focus {
     border-color: #ff9900;
     box-shadow: 0 0 5px rgba(255,153,0,0.5);
 }
 
-button {
-    width: 40%;
+/* Labela */
+label {
+    font-weight: bold;
+    font-size: 14px;
+    color: #f0eae0;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Dugme za login */
+button#dugme {
+    width: 50%;
     padding: 12px;
-    margin-top: 15px;
+    margin-top: 10px;
     background-color: #ff9900;
     color: white;
     font-size: 16px;
@@ -104,6 +73,65 @@ button {
     transition: background-color 0.3s;
 }
 
-button:hover {
+button#dugme:hover {
     background-color: #e68a00;
+}
+
+/* Div ispod forme za poruke */
+#areaBelow {
+    width: 35%;
+    margin: 20px auto;
+    text-align: center;
+    font-size: 16px;
+    color: red;
+}
+
+/* Responsive za manje ekrane */
+@media screen and (max-width: 750px) {
+    #formaDugme {
+        width: 80%;
+        text-align: center;
+    }
+    
+    input[type="text"],
+    input[type="password"] {
+        width: 90%;
+    }
+    
+    button#dugme {
+        width: 70%;
+    }
+    
+    #areaBelow {
+        width: 80%;
+    }
+}
+/* Pozdravna poruka */
+#pozdravnaPoruka {
+    width: 60%;
+    margin: 30px auto 20px auto;
+    padding: 20px;
+    background: linear-gradient(135deg, #ff9900, #ffd27f);
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* Hover efekat */
+#pozdravnaPoruka:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+
+/* Responsive */
+@media screen and (max-width: 750px) {
+    #pozdravnaPoruka {
+        width: 85%;
+        font-size: 18px;
+        padding: 15px;
+    }
 }

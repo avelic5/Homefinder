@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="bs-BA">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign-in</title>
+    <link rel="stylesheet" type="text/css" href="../Style/signin.css" />
+  </head>
+
+  <body>
+    <iframe src="meni.html"></iframe>
+    <div class="user-profil">
+      <div>
+        <img
+          src="../resources/pocetna.jpg"
+          alt="Korisnikova slika"
+          class="user-slika"
+        />
+      </div>
+
+      <div id="forma">
+        <div class="input">
+          <label for="ime">Ime:</label>
+          <input id="ime" type="text" placeholder="Unesite ime" />
+        </div>
+
+        <br />
+        <div class="input">
+          <label for="prezime">Prezime:</label>
+          <input id="prezime" type="text" placeholder="Unesite prezime" />
+        </div>
+
+        <br />
+        <div class="input">
+          <label for="username">Username:</label>
+          <input id="username" type="text" placeholder="Unesite username" />
+        </div>
+
+        <br />
+        <div class="input">
+          <label for="password">Lozinka:</label>
+          <input id="password" type="password" placeholder="Unesite lozinku" />
+        </div>
+        <br>
+        <button>Prijavi se:</button>
+      </div>
+    </div>
+    <script src="/scripts/PoziviAjax.js"></script>
+    <script src="/scripts/prijava.js"></script>
+  </body>
+</html>

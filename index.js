@@ -3,14 +3,14 @@ const session = require("express-session");
 const path = require("path");
 const fs = require("fs").promises; // Using asynchronus API for file read and write
 const bcrypt = require("bcrypt");
-
 const app = express();
 const PORT = 3000;
+
 
 app.use(
   session({
     secret: "tajna sifra",
-    resave: true,
+    resave: false,
     saveUninitialized: true,
   })
 );
@@ -74,10 +74,20 @@ async function saveJsonFile(filename, data) {
   }
 }
 
+
 /*
 Checks if the user exists and if the password is correct based on korisnici.json data. 
 If the data is correct, the username is saved in the session and a success message is sent.
 */
+
+app.get("/",(req,res)=>{
+  if(!req.session.username){
+    res.sendFile(__dirname+"/public/html/prijava.html");
+  }
+  else{
+    res.sendFile(__dirname+"/public/profil.html");
+  }
+})
 app.post("/login", async (req, res) => {
   const jsonObj = req.body;
 
@@ -95,11 +105,39 @@ app.post("/login", async (req, res) => {
           jsonObj.password,
           korisnik.password
         );
+        if (req.session.lockUntil && Date.now() < req.session.lockUntil) {
+          console.log("Korisnik je još uvijek blokiran!");
 
-        if (isPasswordMatched) {
+          await fs.appendFile(
+            "prijave.txt",
+            `${new Date()} - ${korisnik.username} - status: neuspješno \n`
+          );
+
+          return res.status(429).json({
+            greska:
+              "Previse neuspjesnih pokusaja. Pokusajte ponovo za 1 minutu.",
+          });
+        } else if (isPasswordMatched) {
           req.session.username = korisnik.username;
           found = true;
+          req.session.broj_pokusaja_login = 0;
+          await fs.appendFile(
+            "prijave.txt",
+            `${new Date()} - ${korisnik.username} - status: uspješno \n`
+          );
           break;
+        } else {
+          if (!req.session.broj_pokusaja_login)
+            req.session.broj_pokusaja_login = 0;
+          await fs.appendFile(
+            "prijave.txt",
+            `${new Date()} - ${korisnik.username} - status: neuspješno \n`
+          );
+          req.session.broj_pokusaja_login++;
+          if (req.session.broj_pokusaja_login === 3) {
+            req.session.lockUntil = Date.now() + 30 * 60 * 1000;
+            req.session.broj_pokusaja_login = 0;
+          }
         }
       }
     }
@@ -183,7 +221,7 @@ Allows logged user to make a request for a property
 */
 app.post("/upit", async (req, res) => {
   // Check if the user is authenticated
-  if (!req.session.user) {
+  if (!req.session.username) {
     // User is not logged in
     return res.status(401).json({ greska: "Neautorizovan pristup" });
   }
@@ -200,7 +238,7 @@ app.post("/upit", async (req, res) => {
 
     // Find the user by username
     const loggedInUser = users.find(
-      (user) => user.username === req.session.user.username
+      (user) => user.username === req.session.username
     );
 
     // Check if the property with nekretnina_id exists
@@ -215,6 +253,16 @@ app.post("/upit", async (req, res) => {
         .json({ greska: `Nekretnina sa id-em ${nekretnina_id} ne postoji` });
     }
 
+    let provjera = nekretnina.upiti.filter((obj) => {
+      return obj.korisnik_id === loggedInUser.id;
+    });
+
+    if (provjera.length >= 3) {
+      return res
+        .status(429)
+        .json({ greska: "Previse upita za istu nekretninu." });
+    }
+
     // Add a new query to the property's queries array
     nekretnina.upiti.push({
       korisnik_id: loggedInUser.id,
@@ -227,6 +275,50 @@ app.post("/upit", async (req, res) => {
     res.status(200).json({ poruka: "Upit je uspješno dodan" });
   } catch (error) {
     console.error("Error processing query:", error);
+    res.status(500).json({ greska: "Internal Server Error" });
+  }
+});
+app.get("/upiti/moji", async (req, res) => {
+  // Provjera da li je korisnik loginovan
+  if (!req.session.username) {
+    return res.status(401).json({ greska: "Neautorizovan pristup" });
+  }
+
+  try {
+    // Učitaj korisnike i nekretnine iz JSON fajlova
+    const users = await readJsonFile("korisnici");
+    const nekretnine = await readJsonFile("nekretnine");
+
+    // Pronađi loginovanog korisnika
+    const loggedInUser = users.find(
+      (user) => user.username === req.session.username
+    );
+
+    if (!loggedInUser) {
+      return res.status(401).json({ greska: "Neautorizovan pristup" });
+    }
+
+    // Prikupi sve upite tog korisnika
+    const mojiUpiti = [];
+
+    nekretnine.forEach((nekretnina) => {
+      nekretnina.upiti.forEach((upit) => {
+        if (upit.korisnik_id === loggedInUser.id) {
+          mojiUpiti.push({
+            id_nekretnine: nekretnina.id,
+            tekst_upita: upit.tekst_upita,
+          });
+        }
+      });
+    });
+
+    if (mojiUpiti.length === 0) {
+      return res.status(404).json([]);
+    }
+
+    res.status(200).json(mojiUpiti);
+  } catch (error) {
+    console.error("Greška prilikom dohvaćanja upita:", error);
     res.status(500).json({ greska: "Internal Server Error" });
   }
 });
@@ -290,49 +382,54 @@ app.get("/nekretnine", async (req, res) => {
   }
 });
 /* ----------------- NEKRETNINE ADDED ROUTES ----------------- */
-app.get("/nekretnine/top5",async(req,res) =>{
-    try{
-        if(!req.query.lokacija) throw new  Error("Query is needed!");
-        let nekretnineData = await readJsonFile("nekretnine");
-        nekretnineData= nekretnineData.filter(item =>{return item.lokacija.toLowerCase()===req.query.lokacija});
-            nekretnineData.sort(function(a,b){
-                return Date.parse(a.datum_objave) > Date.parse(b.datum_objave);
-            });
-            res.json(nekretnineData.slice(0,5));
-    }
-    catch(error){
- console.error("Error while routing /nekretnine/top5:", error);
+app.get("/nekretnine/top5", async (req, res) => {
+  try {
+    if (!req.query.lokacija) throw new Error("Query is needed!");
+    let nekretnineData = await readJsonFile("nekretnine");
+    nekretnineData = nekretnineData.filter((item) => {
+      return item.lokacija.toLowerCase() === req.query.lokacija;
+    });
+    nekretnineData.sort(function (a, b) {
+      return Date.parse(a.datum_objave) > Date.parse(b.datum_objave);
+    });
+    res.json(nekretnineData.slice(0, 5));
+  } catch (error) {
+    console.error("Error while routing /nekretnine/top5:", error);
     res.status(500).json({ greska: error.message });
-    }
-})
-app.get("/nekretnina/:id",async (req,res)=>{
-     let nekretnineData = await readJsonFile("nekretnine");
-     let obj = nekretnineData.find(elem =>elem.id==req.params.id);
-     obj.upiti=obj.upiti.sort(function(a,b){return a.id<b.id}).slice(0,3);
-     res.json(obj);
-})
-
-app.get("/next/upiti/nekretnina/:id", async (req,res)=>{
-  try{
-        if(!req.query.page) throw new  Error("Query is needed!");
-        let nekretnineData = await readJsonFile("nekretnine");
-        let page=Number(req.query.page);
-        
-        let index=nekretnineData.findIndex(elem =>elem.id===Number(req.params.id));
-       
-        let rez=[];
-        for(let i=index+page*3;i<nekretnineData.length;i++){
-          rez.push(nekretnineData[i].upiti);
-        }
-        if(rez.length===0)res.status(404).json(rez);
-        else res.status(200).json(rez);
-
   }
-  catch(error){
+});
+app.get("/nekretnina/:id", async (req, res) => {
+  let nekretnineData = await readJsonFile("nekretnine");
+  let obj = nekretnineData.find((elem) => elem.id == req.params.id);
+  obj.upiti = obj.upiti
+    .sort(function (a, b) {
+      return a.id < b.id;
+    })
+    .slice(0, 3);
+  res.json(obj);
+});
+
+app.get("/next/upiti/nekretnina/:id", async (req, res) => {
+  try {
+    if (!req.query.page) throw new Error("Query is needed!");
+    let nekretnineData = await readJsonFile("nekretnine");
+    let page = Number(req.query.page);
+
+    let index = nekretnineData.findIndex(
+      (elem) => elem.id === Number(req.params.id)
+    );
+
+    let rez = [];
+    for (let i = index + page * 3; i < nekretnineData.length; i++) {
+      rez.push(nekretnineData[i].upiti);
+    }
+    if (rez.length === 0) res.status(404).json(rez);
+    else res.status(200).json(rez);
+  } catch (error) {
     console.error("Error while routing /nekretnine/:id", error);
     res.status(500).json({ greska: error.message });
   }
-})
+});
 
 /* ----------------- MARKETING ROUTES ----------------- */
 
