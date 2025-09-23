@@ -1,9 +1,10 @@
 /* Body i osnovno */
 body {
-    background-color: #fdf1d3;
+    background: linear-gradient(135deg, #fdf1d3, #cfe2ff);
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    
 }
 
 /* Iframe (meni) */
@@ -16,8 +17,8 @@ iframe {
 
 /* Centrirana forma za login */
 #formaDugme {
-    width: 35%;
-    margin: 50px auto;
+    width: 40%;
+    margin: 0px auto;
     padding: 30px;
     background-color: #6d675a;
     border: 2px solid #8a8a8a;
@@ -29,11 +30,14 @@ iframe {
     align-items: center;
     gap: 15px;
 }
+form{
+    width:40%;
+}
 
 /* Input polja */
 input[type="text"],
 input[type="password"] {
-    width: 80%;
+    width: 100%;
     padding: 10px;
     font-size: 15px;
     border: 1px solid #ccc;
@@ -60,7 +64,7 @@ label {
 
 /* Dugme za login */
 button#dugme {
-    width: 50%;
+    width: 30%;
     padding: 12px;
     margin-top: 10px;
     background-color: #ff9900;
@@ -126,6 +130,32 @@ button#dugme:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 25px rgba(0,0,0,0.25);
 }
+#dugme2 {
+    width: 30%;
+    padding: 12px;
+    margin-top: 10px;
+    background-color: #ff9900;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#dugme2:hover {
+    background-color: #e68a00;
+}
+
+#cont{
+    height:100%;
+    width:100%;
+    margin-top:10%;
+ 
+    
+}
+
 
 /* Responsive */
 @media screen and (max-width: 750px) {

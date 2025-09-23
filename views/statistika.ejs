@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statistika Nekretnina</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="../Style/statistika.css">
+    <link rel="stylesheet" href="/style/statistika.css">
+    <link rel="stylesheet" type="text/css" href="/style/meni.css">
 </head>
 <body>
-    <iframe src="meni.html"></iframe>
+   <%-include("meni.ejs") %>
     <h1>Statistika nekretnina</h1>
     <br> 
     <div id="centriraj"> <label for="period-pocetak">Period:</label>
@@ -29,10 +30,10 @@
    
      
     
-<script src="../Scripts/SpisakNekretnina.js"></script>
-<script src="../Scripts/StatistikaNekretnina.js"></script>
-<script src="../Scripts/podaci.js"></script>
-<script src="../Scripts/statistika.js"></script>
+<script src="/scripts/SpisakNekretnina.js"></script>
+<script src="/scripts/StatistikaNekretnina.js"></script>
+<script src="/scripts/podaci.js"></script>
+<script src="/scripts/statistika.js"></script>
 
 
 </body>

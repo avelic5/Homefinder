@@ -15,9 +15,13 @@ window.onload =function(){ //ovo znaci kad se sve komponente ocitaju
                     var divElement=document.getElementById("areaBelow")
                     divElement.innerHTML="<h2>Neispravni podaci</h2>"
                 }else{
-                    window.location.href="http://localhost:3000/nekretnine.html"
+                    window.location.href="/"
                 }
             }
         })
     }
-}
+
+    let dugme2= this.document.getElementById("dugme2");
+    dugme2.onclick = function(){
+        window.location.href="/signup";
+    }}

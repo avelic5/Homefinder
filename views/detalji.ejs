@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="bs-BA">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalji</title>
+    <link rel="stylesheet" type="text/css" href="/style/detalji.css">
+    <link rel="stylesheet" type="text/css" href="/style/meni.css">
+</head>
+
+<body>
+    <%- include("meni.ejs") -%>
+
+        <div id="osnovno">
+            <img src="/resources/<%=id%>.jpg" alt="Nekretnina">
+            <p><strong>Naziv:</strong></p>
+            <p><strong>Kvadratura:</strong> <%=kvadratura%> m²</p>
+            <p><strong>Cijena:</strong> <%=cijena%> KM</p>
+        </div>
+
+        <h3>DETALJI</h3>
+        <div id="detalji">
+            <div id="kolona1">
+                <p><strong>Tip grijanja:</strong><%=tip_grijanja%></p>
+                <p><strong>Lokacija:</strong> <%=lokacija%></p>
+            </div>
+            <div id="kolona2">
+                <p><strong>Godina izgradnje:</strong><%=godina_izgradnje%></p>
+                <p><strong>Datum objave oglasa:</strong> <%=naziv%></p>
+            </div>
+            <div id="opis">
+                <p><strong>Opis:</strong><%=opis%></p>
+            </div>
+        </div>
+
+
+        <h3>UPITI</h3>
+        <div id="upiti">
+            <% for(let i=0;i<upiti.length;i++){ %>
+            <div class="upit">
+                <p><strong>Korisnik <%=upiti[i].korisnik_id%></strong></p>
+                <p><%=upiti[i].tekst_upita %></p>
+            </div>
+             <% }%>
+           
+        </div>
+</body>
+
+</html>

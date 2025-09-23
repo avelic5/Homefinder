@@ -2,61 +2,153 @@
   {
     "id": 1,
     "tip_nekretnine": "Stan",
-    "naziv": "Useljiv stan Sarajevo",
-    "kvadratura": 58,
-    "cijena": 232000,
+    "naziv": "Stan 1",
+    "kvadratura": 80,
+    "cijena": 100000,
     "tip_grijanja": "plin",
     "lokacija": "Novo Sarajevo",
-    "godina_izgradnje": 2019,
+    "godina_izgradnje": 2023,
     "datum_objave": "01.10.2023.",
-    "opis": "Sociis natoque penatibus.",
+    "opis": "Useljiv stan.",
     "upiti": [
-      {
-        "korisnik_id": 2,
-        "tekst_upita": "Nullam eu pede mollis pretium."
-      },
-      {
-        "korisnik_id": 3,
-        "tekst_upita": "Phasellus viverra nulla."
-      },
-      {
-        "korisnik_id": 3,
-        "tekst_upita": "Phasellus viverra nulla."
-      },
-      {
-        "korisnik_id": 3,
-        "tekst_upita": "opala"
-      },
-      {
-        "korisnik_id": 3,
-        "tekst_upita": "opalaaa"
-      },
-      {
-        "korisnik_id": 3,
-        "tekst_upita": "aaaa"
-      },
-      {
-        "korisnik_id": 3,
-        "tekst_upita": "sada"
-      }
+      { "korisnik_id": 1, "tekst_upita": "Da li je stan odmah useljiv?" },
+      { "korisnik_id": 2, "tekst_upita": "Postoji li parking u blizini?" }
     ]
   },
   {
     "id": 2,
-    "tip_nekretnine": "Poslovni prostor",
-    "naziv": "Mali poslovni prostor",
-    "kvadratura": 20,
-    "cijena": 70000,
+    "tip_nekretnine": "Stan",
+    "naziv": "Stan 2",
+    "kvadratura": 80,
+    "cijena": 100000,
+    "tip_grijanja": "plin",
+    "lokacija": "Novo Sarajevo",
+    "godina_izgradnje": 2023,
+    "datum_objave": "01.10.2023.",
+    "opis": "Useljiv stan.",
+    "upiti": [
+      { "korisnik_id": 3, "tekst_upita": "Koliki su mjesečni troškovi režija?" }
+    ]
+  },
+  {
+    "id": 3,
+    "tip_nekretnine": "Stan",
+    "naziv": "Stan 3",
+    "kvadratura": 80,
+    "cijena": 100000,
+    "tip_grijanja": "plin",
+    "lokacija": "Novo Sarajevo",
+    "godina_izgradnje": 2023,
+    "datum_objave": "01.10.2023.",
+    "opis": "Useljiv stan.",
+    "upiti": [
+      { "korisnik_id": 2, "tekst_upita": "Da li stan ima balkon?" },
+      { "korisnik_id": 1, "tekst_upita": "Koja je orijentacija stana?" }
+    ]
+  },
+  {
+    "id": 4,
+    "tip_nekretnine": "Stan",
+    "naziv": "Stan 4",
+    "kvadratura": 80,
+    "cijena": 100000,
+    "tip_grijanja": "plin",
+    "lokacija": "Novo Sarajevo",
+    "godina_izgradnje": 2023,
+    "datum_objave": "01.10.2023.",
+    "opis": "Useljiv stan.",
+    "upiti": [
+      { "korisnik_id": 3, "tekst_upita": "Ima li stan podrum?" }
+    ]
+  },
+  {
+    "id": 5,
+    "tip_nekretnine": "Kuća",
+    "naziv": "Kuća 1",
+    "kvadratura": 150,
+    "cijena": 200000,
     "tip_grijanja": "struja",
     "lokacija": "Centar",
-    "godina_izgradnje": 2005,
-    "datum_objave": "20.08.2023.",
-    "opis": "Magnis dis parturient montes.",
+    "godina_izgradnje": 2023,
+    "datum_objave": "01.10.2023.",
+    "opis": "Prostrana kuća.",
     "upiti": [
-      {
-        "korisnik_id": 1,
-        "tekst_upita": "Integer tincidunt."
-      }
+      { "korisnik_id": 1, "tekst_upita": "Da li kuća ima garažu?" }
+    ]
+  },
+  {
+    "id": 6,
+    "tip_nekretnine": "Kuća",
+    "naziv": "Kuća 2",
+    "kvadratura": 150,
+    "cijena": 200000,
+    "tip_grijanja": "struja",
+    "lokacija": "Centar",
+    "godina_izgradnje": 2023,
+    "datum_objave": "01.10.2023.",
+    "opis": "Prostrana kuća.",
+    "upiti": [
+      { "korisnik_id": 2, "tekst_upita": "Koliko soba kuća ima?" }
+    ]
+  },
+  {
+    "id": 7,
+    "tip_nekretnine": "Kuća",
+    "naziv": "Kuća 3",
+    "kvadratura": 150,
+    "cijena": 200000,
+    "tip_grijanja": "struja",
+    "lokacija": "Centar",
+    "godina_izgradnje": 2023,
+    "datum_objave": "01.10.2023.",
+    "opis": "Prostrana kuća.",
+    "upiti": [
+      { "korisnik_id": 3, "tekst_upita": "Ima li kuća dvorište?" }
+    ]
+  },
+  {
+    "id": 8,
+    "tip_nekretnine": "Kuća",
+    "naziv": "Kuća 4",
+    "kvadratura": 150,
+    "cijena": 200000,
+    "tip_grijanja": "struja",
+    "lokacija": "Centar",
+    "godina_izgradnje": 2023,
+    "datum_objave": "01.10.2023.",
+    "opis": "Prostrana kuća.",
+    "upiti": [
+      { "korisnik_id": 1, "tekst_upita": "Koja je udaljenost od škole?" }
+    ]
+  },
+  {
+    "id": 9,
+    "tip_nekretnine": "Poslovni prostor",
+    "naziv": "Poslovni prostor 1",
+    "kvadratura": 200,
+    "cijena": 300000,
+    "tip_grijanja": "struja",
+    "lokacija": "Centar",
+    "godina_izgradnje": 2023,
+    "datum_objave": "01.10.2023.",
+    "opis": "Prostran poslovni prostor.",
+    "upiti": [
+      { "korisnik_id": 2, "tekst_upita": "Da li prostor ima izlog?" }
+    ]
+  },
+  {
+    "id": 10,
+    "tip_nekretnine": "Poslovni prostor",
+    "naziv": "Poslovni prostor 2",
+    "kvadratura": 200,
+    "cijena": 300000,
+    "tip_grijanja": "struja",
+    "lokacija": "Centar",
+    "godina_izgradnje": 2023,
+    "datum_objave": "01.10.2023.",
+    "opis": "Prostran poslovni prostor.",
+    "upiti": [
+      { "korisnik_id": 3, "tekst_upita": "Postoji li parking za klijente?" }
     ]
   }
 ]

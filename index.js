@@ -3,9 +3,9 @@ const session = require("express-session");
 const path = require("path");
 const fs = require("fs").promises; // Using asynchronus API for file read and write
 const bcrypt = require("bcrypt");
+const { read } = require("fs");
 const app = express();
 const PORT = 3000;
-
 
 app.use(
   session({
@@ -19,6 +19,19 @@ app.use(express.static(__dirname + "/public"));
 
 // Enable JSON parsing without body-parser
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+// Globalna provjera za sve rute osim login/signup
+app.use((req, res, next) => {
+  const openRoutes = ["/login", "/signup", "/"];
+  if (openRoutes.includes(req.path)) {
+    return next();
+  }
+  if (!req.session.username) {
+    return res.status(403).send(`<h1 style="color:red; text-align:center; font-size:3rem">ZABRANJEN PRISTUP</h1>`);
+  }
+  next();
+});
+
 
 /* ---------------- SERVING HTML -------------------- */
 
@@ -74,20 +87,54 @@ async function saveJsonFile(filename, data) {
   }
 }
 
-
 /*
 Checks if the user exists and if the password is correct based on korisnici.json data. 
 If the data is correct, the username is saved in the session and a success message is sent.
 */
 
-app.get("/",(req,res)=>{
-  if(!req.session.username){
-    res.sendFile(__dirname+"/public/html/prijava.html");
+app.get("/", (req, res) => {
+  if (!req.session.username) {
+    res.render("prijava.ejs");
+  } else {
+    res.render("nekretnine.ejs",{ aktivnaStranica: "nekretnine" });
   }
-  else{
-    res.sendFile(__dirname+"/public/profil.html");
-  }
+});
+
+app.get("/detalji/:id",async (req,res)=>{
+  let nekretnina= await readJsonFile("nekretnine");
+  nekretnina[req.params.id-1]["aktivnaStranica"]="nekretnine";
+  res.render("detalji.ejs",nekretnina[req.params.id-1]);
 })
+
+app.get("/signup", (req, res) => {
+  res.render("signup.ejs");
+});
+app.post("/signup", async (req, res) => {
+  const { ime, prezime, username, password } = req.body;
+
+  if (!username || !email || !password) {
+    return res.send("Sva polja su obavezna!");
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Ovdje ide kod za spremanje korisnika u bazu
+  // npr: const newUser = await db.Users.create({ username, email, password: hashedPassword });
+  const users = readJsonFile("korisnici");
+
+  saveJsonFile("korisnici", {
+    id: users[0].id,
+    ime,
+    prezime,
+    username,
+    password: hashedPassword,
+  });
+
+  req.session.username = username;
+
+  res.redirect("/");
+});
+
 app.post("/login", async (req, res) => {
   const jsonObj = req.body;
 
@@ -209,7 +256,8 @@ app.get("/korisnik", async (req, res) => {
       password: user.password, // Should exclude the password for security reasons
     };
 
-    res.status(200).json(userData);
+   
+    res.render("profil.ejs", { user: userData });
   } catch (error) {
     console.error("Error fetching user data:", error);
     res.status(500).json({ greska: "Internal Server Error" });
@@ -372,15 +420,21 @@ app.put("/korisnik", async (req, res) => {
 /*
 Returns all properties from the file.
 */
-app.get("/nekretnine", async (req, res) => {
+app.get("/nekretnine",  (req, res) => {
   try {
-    const nekretnineData = await readJsonFile("nekretnine");
-    res.json(nekretnineData);
+    
+    res.render("nekretnine.ejs",{aktivnaStranica:"nekretnine"});
   } catch (error) {
     console.error("Error fetching properties data:", error);
     res.status(500).json({ greska: "Internal Server Error" });
   }
 });
+app.get("/statistike",(req,res)=>{
+  res.render("statistika.ejs",{ aktivnaStranica: "statistike" });
+})
+app.get("/vijesti",(req,res)=>{
+res.render("vijesti.ejs",{ aktivnaStranica: "vijesti" });
+})
 /* ----------------- NEKRETNINE ADDED ROUTES ----------------- */
 app.get("/nekretnine/top5", async (req, res) => {
   try {

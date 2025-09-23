@@ -191,3 +191,5 @@ nekretnine.init(listaNekretnina, listaKorisnika);
 spojiNekretnine(divStan, nekretnine, "Stan");
 spojiNekretnine(divKuca, nekretnine, "Kuća");
 spojiNekretnine(divPp, nekretnine, "Poslovni prostor");
+
+

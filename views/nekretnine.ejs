@@ -5,11 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nekretnine</title>
-    <link rel="stylesheet" type="text/css" href="../Style/nekretnine.css">
+    <link rel="stylesheet" type="text/css" href="/style/nekretnine.css">
+    <link rel="stylesheet" type="text/css" href="/style/meni.css">
 </head>
 
 <body>
-    <iframe src="meni.html"></iframe>
+     <%- include("meni.ejs") -%>
 
 
     <div class="tip-nekretnine" id="stan">
@@ -18,7 +19,7 @@
 
 
             <div class="nekretnina">
-                <img class="slika-nekretnine" src="../resources/stan1.jpg" alt="Stan 1">
+                <img class="slika-nekretnine" src="/resources/5.jpg" alt="Stan 1">
                 <div class="detalji-nekretnine">
                     <h3>Stan 1</h3>
                     <p>Kvadratura: 80 m²</p>
@@ -26,12 +27,12 @@
                 <div class="cijena-nekretnine">
                     <p>Cijena: 100.000 €</p>
                 </div>
-                <a href="detalji.html" class="detalji-dugme">Detalji</a>
+                <a href="/detalji/5" class="detalji-dugme">Detalji</a>
             </div>
 
 
             <div class="nekretnina">
-                <img class="slika-nekretnine" src="../resources/stan2.jpg" alt="Stan 2">
+                <img class="slika-nekretnine" src="/resources/6.jpg" alt="Stan 2">
                 <div class="detalji-nekretnine">
                     <h3>Stan 2</h3>
                     <p>Kvadratura: 80 m²</p>
@@ -39,12 +40,12 @@
                 <div class="cijena-nekretnine">
                     <p>Cijena: 100.000 €</p>
                 </div>
-                <a href="detalji.html" class="detalji-dugme">Detalji</a>
+                <a href="/detalji/6" class="detalji-dugme">Detalji</a>
             </div>
 
 
             <div class="nekretnina">
-                <img class="slika-nekretnine" src="../resources/stan3.jpg" alt="Stan 3">
+                <img class="slika-nekretnine" src="/resources/7.jpg" alt="Stan 3">
                 <div class="detalji-nekretnine">
                     <h3>Stan 3</h3>
                     <p>Kvadratura: 80 m²</p>
@@ -52,11 +53,11 @@
                 <div class="cijena-nekretnine">
                     <p>Cijena: 100.000 €</p>
                 </div>
-                <a href="detalji.html" class="detalji-dugme">Detalji</a>
+                <a href="/detalji/7" class="detalji-dugme">Detalji</a>
             </div>
 
             <div class="nekretnina">
-                <img class="slika-nekretnine" src="../resources/stan4.jpg" alt="Stan 4">
+                <img class="slika-nekretnine" src="/resources/8.jpg" alt="Stan 4">
                 <div class="detalji-nekretnine">
                     <h3>Stan 4</h3>
                     <p>Kvadratura: 80 m²</p>
@@ -64,7 +65,7 @@
                 <div class="cijena-nekretnine">
                     <p>Cijena: 100.000 €</p>
                 </div>
-                <a href="detalji.html" class="detalji-dugme">Detalji</a>
+                <a href="/detalji/8" class="detalji-dugme">Detalji</a>
             </div>
 
            
@@ -78,7 +79,7 @@
         <div class="grid-lista-nekretnina">
 
             <div class="nekretnina kuca">
-                <img class="slika-nekretnine" src="../resources/kuca1.jpg" alt="Kuća 1">
+                <img class="slika-nekretnine" src="/resources/1.jpg" alt="Kuća 1">
                 <div class="detalji-nekretnine">
                     <h3>Kuća 1</h3>
                     <p>Kvadratura: 150 m²</p>
@@ -86,11 +87,11 @@
                 <div class="cijena-nekretnine">
                     <p>Cijena: 200.000 €</p>
                 </div>
-                <a href="detalji.html" class="detalji-dugme">Detalji</a>
+                <a href="/detalji/1" class="detalji-dugme">Detalji</a>
             </div>
 
             <div class="nekretnina kuca">
-                <img class="slika-nekretnine" src="../resources/kuca2.jpg" alt="Kuća 2">
+                <img class="slika-nekretnine" src="/resources/2.jpg" alt="Kuća 2">
                 <div class="detalji-nekretnine">
                     <h3>Kuća 2</h3>
                     <p>Kvadratura: 150 m²</p>
@@ -98,11 +99,11 @@
                 <div class="cijena-nekretnine">
                     <p>Cijena: 200.000 €</p>
                 </div>
-                <a href="detalji.html" class="detalji-dugme">Detalji</a>
+                <a href="/detalji/2" class="detalji-dugme">Detalji</a>
             </div>
 
             <div class="nekretnina kuca">
-                <img class="slika-nekretnine" src="../resources/kuca3.jpg" alt="Kuća 3">
+                <img class="slika-nekretnine" src="/resources/3.jpg" alt="Kuća 3">
                 <div class="detalji-nekretnine">
                     <h3>Kuća 3</h3>
                     <p>Kvadratura: 150 m²</p>
@@ -110,11 +111,11 @@
                 <div class="cijena-nekretnine">
                     <p>Cijena: 200.000 €</p>
                 </div>
-                <a href="detalji.html" class="detalji-dugme">Detalji</a>
+                <a href="/detalji/3" class="detalji-dugme">Detalji</a>
             </div>
 
             <div class="nekretnina kuca">
-                <img class="slika-nekretnine" src="../resources/kuca4.jpg" alt="Kuća 4">
+                <img class="slika-nekretnine" src="/resources/4.jpg" alt="Kuća 4">
                 <div class="detalji-nekretnine">
                     <h3>Kuća 4</h3>
                     <p>Kvadratura: 150 m²</p>
@@ -122,7 +123,7 @@
                 <div class="cijena-nekretnine">
                     <p>Cijena: 200.000 €</p>
                 </div>
-                <a href="detalji.html" class="detalji-dugme">Detalji</a>
+                <a href="/detalji/4" class="detalji-dugme">Detalji</a>
             </div>
         </div>
     </div>
@@ -132,7 +133,7 @@
         <h1>Poslovni prostor</h1>
         <div class="grid-lista-nekretnina">
             <div class="nekretnina pp">
-                <img class="slika-nekretnine" src="../resources/poslovniprostor2.jpg" alt="Poslovni prostor 1">
+                <img class="slika-nekretnine" src="/resources/9.jpg" alt="Poslovni prostor 1">
                 <div class="detalji-nekretnine">
                     <h3>Poslovni prostor 1</h3>
                     <p>Kvadratura: 200 m²</p>
@@ -140,10 +141,10 @@
                 <div class="cijena-nekretnine">
                     <p>Cijena: 300.000 €</p>
                 </div>
-                <a href="detalji.html" class="detalji-dugme">Detalji</a>
+                <a href="/detalji/9" class="detalji-dugme">Detalji</a>
             </div>
             <div class="nekretnina pp">
-                <img class="slika-nekretnine" src="../resources/poslovnirprostor1.jpg" alt="Poslovni prostor 2">
+                <img class="slika-nekretnine" src="/resources/10.jpg" alt="Poslovni prostor 2">
                 <div class="detalji-nekretnine">
                     <h3>Poslovni prostor 2</h3>
                     <p>Kvadratura: 200 m²</p>
@@ -151,11 +152,13 @@
                 <div class="cijena-nekretnine">
                     <p>Cijena: 300.000 €</p>
                 </div>
-                <a href="detalji.html" class="detalji-dugme">Detalji</a>
+                <a href="/detalji/10" class="detalji-dugme">Detalji</a>
             </div>
 
         </div>
     </div>
+
+   
 </body>
 
 </html>

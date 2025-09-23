@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="bs-BA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil korisnika</title>
+  <link rel="stylesheet" href="/style/profil.css">
+</head>
+<body>
+
+  <div class="profil-container">
+    <div class="profil-card">
+      <div class="profil-header">
+        <div class="avatar">
+          <span><%= user.ime.charAt(0) %><%= user.prezime.charAt(0) %></span>
+        </div>
+        <h2><%= user.ime %> <%= user.prezime %></h2>
+        <p class="username">@<%= user.username %></p>
+      </div>
+
+      <div class="profil-info">
+        <p><strong>ID:</strong> <%= user.id %></p>
+        <p><strong>Ime:</strong> <%= user.ime %></p>
+        <p><strong>Prezime:</strong> <%= user.prezime %></p>
+        <p><strong>Korisničko ime:</strong> <%= user.username %></p>
+      </div>
+
+      <div class="profil-actions">
+        <a href="/logout" class="btn">Odjava</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
