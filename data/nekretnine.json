@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "id": 5,
     "tip_nekretnine": "Stan",
     "naziv": "Stan 1",
     "kvadratura": 80,
@@ -11,12 +11,18 @@
     "datum_objave": "01.10.2023.",
     "opis": "Useljiv stan.",
     "upiti": [
-      { "korisnik_id": 1, "tekst_upita": "Da li je stan odmah useljiv?" },
-      { "korisnik_id": 2, "tekst_upita": "Postoji li parking u blizini?" }
+      {
+        "korisnik_id": 1,
+        "tekst_upita": "Da li je stan odmah useljiv?"
+      },
+      {
+        "korisnik_id": 2,
+        "tekst_upita": "Postoji li parking u blizini?"
+      }
     ]
   },
   {
-    "id": 2,
+    "id": 6,
     "tip_nekretnine": "Stan",
     "naziv": "Stan 2",
     "kvadratura": 80,
@@ -27,11 +33,22 @@
     "datum_objave": "01.10.2023.",
     "opis": "Useljiv stan.",
     "upiti": [
-      { "korisnik_id": 3, "tekst_upita": "Koliki su mjesečni troškovi režija?" }
+      {
+        "korisnik_id": 3,
+        "tekst_upita": "Koliki su mjesečni troškovi režija?"
+      },
+      {
+        "korisnik_id": 9,
+        "tekst_upita": "gf"
+      },
+      {
+        "korisnik_id": 9,
+        "tekst_upita": "s"
+      }
     ]
   },
   {
-    "id": 3,
+    "id": 7,
     "tip_nekretnine": "Stan",
     "naziv": "Stan 3",
     "kvadratura": 80,
@@ -42,12 +59,18 @@
     "datum_objave": "01.10.2023.",
     "opis": "Useljiv stan.",
     "upiti": [
-      { "korisnik_id": 2, "tekst_upita": "Da li stan ima balkon?" },
-      { "korisnik_id": 1, "tekst_upita": "Koja je orijentacija stana?" }
+      {
+        "korisnik_id": 2,
+        "tekst_upita": "Da li stan ima balkon?"
+      },
+      {
+        "korisnik_id": 1,
+        "tekst_upita": "Koja je orijentacija stana?"
+      }
     ]
   },
   {
-    "id": 4,
+    "id": 8,
     "tip_nekretnine": "Stan",
     "naziv": "Stan 4",
     "kvadratura": 80,
@@ -58,11 +81,14 @@
     "datum_objave": "01.10.2023.",
     "opis": "Useljiv stan.",
     "upiti": [
-      { "korisnik_id": 3, "tekst_upita": "Ima li stan podrum?" }
+      {
+        "korisnik_id": 3,
+        "tekst_upita": "Ima li stan podrum?"
+      }
     ]
   },
   {
-    "id": 5,
+    "id": 1,
     "tip_nekretnine": "Kuća",
     "naziv": "Kuća 1",
     "kvadratura": 150,
@@ -73,11 +99,14 @@
     "datum_objave": "01.10.2023.",
     "opis": "Prostrana kuća.",
     "upiti": [
-      { "korisnik_id": 1, "tekst_upita": "Da li kuća ima garažu?" }
+      {
+        "korisnik_id": 1,
+        "tekst_upita": "Da li kuća ima garažu?"
+      }
     ]
   },
   {
-    "id": 6,
+    "id": 2,
     "tip_nekretnine": "Kuća",
     "naziv": "Kuća 2",
     "kvadratura": 150,
@@ -88,11 +117,14 @@
     "datum_objave": "01.10.2023.",
     "opis": "Prostrana kuća.",
     "upiti": [
-      { "korisnik_id": 2, "tekst_upita": "Koliko soba kuća ima?" }
+      {
+        "korisnik_id": 2,
+        "tekst_upita": "Koliko soba kuća ima?"
+      }
     ]
   },
   {
-    "id": 7,
+    "id": 3,
     "tip_nekretnine": "Kuća",
     "naziv": "Kuća 3",
     "kvadratura": 150,
@@ -103,11 +135,14 @@
     "datum_objave": "01.10.2023.",
     "opis": "Prostrana kuća.",
     "upiti": [
-      { "korisnik_id": 3, "tekst_upita": "Ima li kuća dvorište?" }
+      {
+        "korisnik_id": 3,
+        "tekst_upita": "Ima li kuća dvorište?"
+      }
     ]
   },
   {
-    "id": 8,
+    "id": 4,
     "tip_nekretnine": "Kuća",
     "naziv": "Kuća 4",
     "kvadratura": 150,
@@ -118,7 +153,10 @@
     "datum_objave": "01.10.2023.",
     "opis": "Prostrana kuća.",
     "upiti": [
-      { "korisnik_id": 1, "tekst_upita": "Koja je udaljenost od škole?" }
+      {
+        "korisnik_id": 1,
+        "tekst_upita": "Koja je udaljenost od škole?"
+      }
     ]
   },
   {
@@ -133,7 +171,10 @@
     "datum_objave": "01.10.2023.",
     "opis": "Prostran poslovni prostor.",
     "upiti": [
-      { "korisnik_id": 2, "tekst_upita": "Da li prostor ima izlog?" }
+      {
+        "korisnik_id": 2,
+        "tekst_upita": "Da li prostor ima izlog?"
+      }
     ]
   },
   {
@@ -148,7 +189,10 @@
     "datum_objave": "01.10.2023.",
     "opis": "Prostran poslovni prostor.",
     "upiti": [
-      { "korisnik_id": 3, "tekst_upita": "Postoji li parking za klijente?" }
+      {
+        "korisnik_id": 3,
+        "tekst_upita": "Postoji li parking za klijente?"
+      }
     ]
   }
 ]

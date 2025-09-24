@@ -1,97 +1,89 @@
-body {
-    background: linear-gradient(135deg, #fdf1d3, #cfe2ff);
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-/* Navbar kontejner */
 .navbar {
-    background-color: #333;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    border-radius: 0 0 12px 12px;
-    overflow: hidden;
-    position: relative;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* centriranje menija na desktop */
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 0 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 /* Hamburger dugme */
-.menu-icon {
+.menu-toggle {
     display: none;
-    font-size: 26px;
-    color: white;
-    padding: 14px 20px;
+    font-size: 28px;
+    background: none;
+    border: none;
     cursor: pointer;
-}
-.menu li a.active {
-  background-color: #ffcc00;
-  color: #000;
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-weight: bold;
-}
-
-/* Sakriven checkbox */
-#menu-toggle {
-    display: none;
+    position: absolute;
+    left: 20px; /* pomjeri lijevo da ga odmah vidiš */
+    color: #333;
 }
 
 /* Lista menija */
 .menu {
     display: flex;
-    justify-content: center;
-    list-style: none;
+    gap: 20px;
     margin: 0;
     padding: 0;
-    transition: max-height 0.4s ease-out;
+    list-style: none;
+    align-items: center;
 }
 
-/* Linkovi */
 .menu li a {
+    text-decoration: none;
+    color: #333;
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: white;
-    padding: 14px 20px;
-    text-decoration: none;
-    transition: color 0.3s ease, background-color 0.3s ease;
+    gap: 5px;
+    font-weight: 500;
+    padding: 5px 10px;
+    transition: color 0.3s ease;
 }
 
+.menu li a.active {
+    color: #ffcc00;
+}
+
+/* Hover efekti */
 .menu li a:hover {
-    color: #ff9900;
-    background-color: rgba(255, 255, 255, 0.1);
+    color: #e6b800;
 }
 
-/* -------------------- RESPONSIVE -------------------- */
-@media screen and (max-width: 700px) {
+/* MOBILE */
+@media (max-width: 800px) {
+    .menu-toggle {
+        display: block;
+    }
+
     .menu {
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
         flex-direction: column;
+        background-color: #fff;
         max-height: 0;
         overflow: hidden;
-        background-color: #333;
+        transition: max-height 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
-    #menu-toggle:checked + .menu-icon + .menu {
+    .menu.menu-open {
         max-height: 500px;
-    }
-
-    .menu-icon {
-        display: block;
     }
 
     .menu li {
         width: 100%;
-        border-top: 1px solid rgba(255,255,255,0.2); /* crta preko cijele širine */
-    }
-
-    .menu li:first-child {
-        border-top: none; 
+        text-align: center;
+        margin: 0;
     }
 
     .menu li a {
-        width: 100%; 
-        padding: 12px 20px;
-        display: flex;
-        align-items: center;
+        justify-content: center;
+        padding: 15px 0;
     }
 }
-

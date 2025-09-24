@@ -1,11 +1,9 @@
 <nav class="navbar">
-    <!-- Checkbox hack -->
-    <input type="checkbox" id="menu-toggle">
-    <label for="menu-toggle" class="menu-icon">&#9776;</label>
+    <!-- Hamburger dugme (vidljivo na mobitelima) -->
+    <button class="menu-toggle" id="menu-toggle">&#9776;</button>
 
     <!-- Lista menija -->
-    <ul class="menu">
-
+    <ul class="menu" id="menu">
         <li>
             <a href="/nekretnine" class="<%= aktivnaStranica === 'nekretnine' ? 'active' : '' %>">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -16,7 +14,6 @@
                 </svg> Nekretnine
             </a>
         </li>
-
         <li>
             <a href="/statistike" class="<%= aktivnaStranica === 'statistike' ? 'active' : '' %>">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -26,7 +23,6 @@
                 </svg> Statistike
             </a>
         </li>
-
         <li>
             <a href="/vijesti" class="<%= aktivnaStranica === 'vijesti' ? 'active' : '' %>">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -36,16 +32,24 @@
                 </svg> Vijesti
             </a>
         </li>
-
         <li>
             <a href="/korisnik" class="<%= aktivnaStranica === 'korisnik' ? 'active' : '' %>">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-plus-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                    <path
-                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-                </svg> Prijava
+                    class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M13.468 12.37C12.758 11.226 11.468 10 8 10s-4.758 1.226-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z"/>
+                    <path fill-rule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                    <path fill-rule="evenodd" d="M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1z"/>
+                </svg> Profil
             </a>
         </li>
     </ul>
 </nav>
+
+<script>
+  const toggleBtn = document.getElementById("menu-toggle");
+  const menu = document.getElementById("menu");
+
+  toggleBtn.addEventListener("click", () => {
+    menu.classList.toggle("menu-open");
+  });
+</script>

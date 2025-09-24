@@ -1,23 +1,65 @@
 [
-    {
-        "id": 1,
-        "ime": "Neko",
-        "prezime": "Nekic",
-        "username": "username1",
-        "password": "$2b$10$OFykzLMWv.wpDk2dXT5C8ObIgy8tlZYbm0ZPN0VTe8I/jXosIX1EG"
-    },
-    {
-        "id": 2,
-        "ime": "Neko2",
-        "prezime": "Nekic2",
-        "username": "username2",
-        "password": "$2b$10$eN2a0Ii0mkjvpSUU.6.S4uASuULIlAspWFc2LkJTmIYPZszB8oyXC"
-    },
-    {
-        "id": 3,
-        "ime": "Aldin",
-        "prezime": "Velić",
-        "username": "aldin",
-        "password": "$2a$12$LLHRD/CC6BF8IbJOQqeS8OE7YYtxbPexpYFvVQOw1CSzVLFpXMTFm"
-    }
+  {
+    "id": 1,
+    "ime": "Aldin",
+    "prezime": "Velić",
+    "username": "aldin123",
+    "password": "$2b$10$8rc.CaJcVbhyGFTVZjOiSOhY7hnLrXCf5wfntHLA3WQ6hzY7vHgwa"
+  },
+  {
+    "id": 2,
+    "ime": "Adnan",
+    "prezime": "Kovač",
+    "username": "adnan.kovac",
+    "password": "$2b$10$7uR.CbJdVbgyHFTVZjPiSOhY7hnLrXCf5wfntHLA3WQ6hzY7vHgwb"
+  },
+  {
+    "id": 3,
+    "ime": "Selma",
+    "prezime": "Bašić",
+    "username": "selma_b",
+    "password": "$2b$10$3kT.XyLmAbcdGHTVZxQiSOhY7hnLrXCf5wfntHLA3WQ6hzY7vHabc"
+  },
+  {
+    "id": 4,
+    "ime": "Ivan",
+    "prezime": "Marković",
+    "username": "ivan.marko",
+    "password": "$2b$10$9zP.MnQwRstuvHTVZjLiSOhY7hnLrXCf5wfntHLA3WQ6hzY7vHdef"
+  },
+  {
+    "id": 5,
+    "ime": "Maja",
+    "prezime": "Zelić",
+    "username": "maja.zelic",
+    "password": "$2b$10$1aB.CdEfGhijKLTYZ0SiSOhY7hnLrXCf5wfntHLA3WQ6hzY7vHg12"
+  },
+  {
+    "id": 6,
+    "ime": "Tarik",
+    "prezime": "Hadžić",
+    "username": "tarik_h",
+    "password": "$2b$10$5fG.HiJkLmnoPQTWZ2ZiSOhY7hnLrXCf5wfntHLA3WQ6hzY7vHg34"
+  },
+  {
+    "id": 7,
+    "ime": "Lejla",
+    "prezime": "Smajić",
+    "username": "lejla.smajic",
+    "password": "$2b$10$2cD.EfGhIjklMNTVZjRiSOhY7hnLrXCf5wfntHLA3WQ6hzY7vHg56"
+  },
+  {
+    "id": 8,
+    "ime": "Aldin1",
+    "prezime": "Velić1",
+    "username": "aldin43",
+    "password": "$2b$10$SfS2syOIhuYTGsZzpIfZmepszmFhln61t1JVT60VQQcNVep0YFjnW"
+  },
+  {
+    "id": 9,
+    "ime": "Aldin",
+    "prezime": "Velić",
+    "username": "aldin",
+    "password": "$2b$10$p75O7Hy1Q6BeCbQ5D8wfCO0rXOxOCKNAWUBe.UYgt/7XXcFDae/iu"
+  }
 ]

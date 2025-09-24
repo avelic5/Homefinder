@@ -9,7 +9,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  height: 92vh;
   padding: 20px;
 }
 
@@ -18,7 +18,7 @@ body {
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   padding: 30px;
   text-align: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -55,6 +55,8 @@ body {
 .profil-info {
   text-align: left;
   margin: 20px 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .profil-info p {
@@ -62,8 +64,27 @@ body {
   font-size: 1rem;
 }
 
+.profil-info label {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0;
+  font-size: 1rem;
+}
+
+.profil-info input {
+  padding: 8px 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
 .profil-actions {
   margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* razmak između dugmadi */
+  flex-wrap: wrap;
 }
 
 .btn {
@@ -75,8 +96,28 @@ body {
   text-decoration: none;
   font-weight: bold;
   transition: background 0.3s ease;
+  cursor: pointer;
+  border: none;
 }
 
 .btn:hover {
   background: #e6b800;
+}
+
+/* Poseban razmak za dugme Odustani */
+.logout-btn {
+  margin-left: 20px;
+}
+.upiti-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.upit-card {
+  background: #fdf1d3;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }

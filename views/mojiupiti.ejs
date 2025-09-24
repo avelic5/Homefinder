@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="bs-BA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moji upiti</title>
+  <link rel="stylesheet" href="/style/profil.css">
+  <link rel="stylesheet" href="/style/meni.css">
+</head>
+<body>
+  <%- include("meni.ejs") %>
+
+  <div class="profil-container">
+    <div class="profil-card">
+      <div class="profil-header">
+        <h2>Moji upiti</h2>
+      </div>
+
+      <div class="upiti-list">
+        <% if(mojiUpiti && mojiUpiti.length > 0){ %>
+          <% mojiUpiti.forEach(function(upit){ %>
+            <div class="upit-card">
+              <p><strong>ID nekretnine:</strong> <%= upit.id_nekretnine %></p>
+              <p><strong>Upit:</strong> <%= upit.tekst_upita %></p>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <p>Nema upita.</p>
+        <% } %>
+      </div>
+
+      <div class="profil-actions">
+        <a href="/korisnik" class="btn logout-btn">Nazad na profil</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

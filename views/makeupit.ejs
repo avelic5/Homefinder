@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="bs-BA">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postavi upit</title>
+    <link rel="stylesheet" href="/style/makeupit.css">
+    <link rel="stylesheet" href="/style/meni.css">
+</head>
+<body>
+    <%- include("meni.ejs") %>
+
+    <div class="makeupit-container">
+        <div class="makeupit-card">
+            <h2>Postavi upit za: <%= naziv %></h2>
+            <form action="/upit/<%=id%>" method="POST">
+                
+                
+                <label for="tekst_upita">Upit:</label>
+                <textarea id="tekst_upita" name="tekst_upita" placeholder="Unesite vaš upit..." required></textarea>
+                
+                <button type="submit" class="btn">Pošalji upit</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

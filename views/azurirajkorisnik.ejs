@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="bs-BA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ažuriraj korisnika</title>
+  <link rel="stylesheet" href="/style/profil.css">
+  <link rel="stylesheet" href="/style/meni.css">
+</head>
+<body>
+  <%- include("meni.ejs") %>
+  
+  <div class="profil-container">
+    <div class="profil-card">
+      <div class="profil-header">
+        <div class="avatar">
+          <span><%= user.ime.charAt(0) %><%= user.prezime.charAt(0) %></span>
+        </div>
+        <h2><%= user.ime %> <%= user.prezime %></h2>
+        <p class="username">@<%= user.username %></p>
+      </div>
+
+      <form action="/korisnik" method="POST" class="profil-info">
+        
+        <input type="hidden" name="_method" value="PUT">
+        <p><strong>ID:</strong> <%= user.id %></p>
+
+        <label>
+          Ime:
+          <input type="text" name="ime" value="<%= user.ime %>" required>
+        </label>
+
+        <label>
+          Prezime:
+          <input type="text" name="prezime" value="<%= user.prezime %>" required>
+        </label>
+
+        <label>
+          Korisničko ime:
+          <input type="text" name="username" value="<%= user.username %>" required>
+        </label>
+
+        <label>
+          Lozinka:
+          <input type="password" name="password" placeholder="Unesite novu lozinku">
+        </label>
+
+        <div class="profil-actions">
+          <button type="submit" class="btn">Sačuvaj promjene</button>
+          <a href="/korisnik" class="btn logout-btn">Odustani</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

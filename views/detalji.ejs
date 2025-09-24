@@ -14,7 +14,7 @@
 
         <div id="osnovno">
             <img src="/resources/<%=id%>.jpg" alt="Nekretnina">
-            <p><strong>Naziv:</strong></p>
+            <p><strong>Naziv: </strong><%=naziv%></p>
             <p><strong>Kvadratura:</strong> <%=kvadratura%> m²</p>
             <p><strong>Cijena:</strong> <%=cijena%> KM</p>
         </div>
@@ -34,6 +34,9 @@
             </div>
         </div>
 
+        <div class="profil-actions">
+    <a href="/makeupit/<%= id %>" class="btn">Postavi upit</a>
+</div>
 
         <h3>UPITI</h3>
         <div id="upiti">

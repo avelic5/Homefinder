@@ -6,12 +6,18 @@ const bcrypt = require("bcrypt");
 const { read } = require("fs");
 const app = express();
 const PORT = 3000;
+const methodOverride = require('method-override');
 
+
+
+app.use(methodOverride('_method'));
 app.use(
   session({
     secret: "tajna sifra",
     resave: false,
     saveUninitialized: true,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 1 day
+    rolling:true
   })
 );
 
@@ -20,17 +26,6 @@ app.use(express.static(__dirname + "/public"));
 // Enable JSON parsing without body-parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// Globalna provjera za sve rute osim login/signup
-app.use((req, res, next) => {
-  const openRoutes = ["/login", "/signup", "/"];
-  if (openRoutes.includes(req.path)) {
-    return next();
-  }
-  if (!req.session.username) {
-    return res.status(403).send(`<h1 style="color:red; text-align:center; font-size:3rem">ZABRANJEN PRISTUP</h1>`);
-  }
-  next();
-});
 
 
 /* ---------------- SERVING HTML -------------------- */
@@ -96,15 +91,19 @@ app.get("/", (req, res) => {
   if (!req.session.username) {
     res.render("prijava.ejs");
   } else {
-    res.render("nekretnine.ejs",{ aktivnaStranica: "nekretnine" });
+    res.render("nekretnine.ejs", { aktivnaStranica: "nekretnine" });
   }
 });
 
-app.get("/detalji/:id",async (req,res)=>{
-  let nekretnina= await readJsonFile("nekretnine");
-  nekretnina[req.params.id-1]["aktivnaStranica"]="nekretnine";
-  res.render("detalji.ejs",nekretnina[req.params.id-1]);
-})
+app.get("/detalji/:id", async (req, res) => {
+  let nekretnine = await readJsonFile("nekretnine");
+  let nekretnina = nekretnine.find(el=>{
+    return el.id==req.params.id;
+  });
+
+  nekretnina.aktivnaStranica = "nekretnine";
+  res.render("detalji.ejs", nekretnina);
+});
 
 app.get("/signup", (req, res) => {
   res.render("signup.ejs");
@@ -112,7 +111,7 @@ app.get("/signup", (req, res) => {
 app.post("/signup", async (req, res) => {
   const { ime, prezime, username, password } = req.body;
 
-  if (!username || !email || !password) {
+  if (!username || !ime || !prezime || !password) {
     return res.send("Sva polja su obavezna!");
   }
 
@@ -120,15 +119,15 @@ app.post("/signup", async (req, res) => {
 
   // Ovdje ide kod za spremanje korisnika u bazu
   // npr: const newUser = await db.Users.create({ username, email, password: hashedPassword });
-  const users = readJsonFile("korisnici");
-
-  saveJsonFile("korisnici", {
-    id: users[0].id,
+  const users = await readJsonFile("korisnici");
+users.push( {
+    id: users.length+1,
     ime,
     prezime,
     username,
     password: hashedPassword,
   });
+  saveJsonFile("korisnici",users);
 
   req.session.username = username;
 
@@ -200,10 +199,26 @@ app.post("/login", async (req, res) => {
   }
 });
 
-/*
-Delete everything from the session.
-*/
-app.post("/logout", (req, res) => {
+// GET ruta za prikaz forme za postavljanje upita
+app.get("/makeupit/:id", async (req, res) => {
+    let nekretnine = await readJsonFile("nekretnine");
+
+    // Pronađi nekretninu sa prosleđenim id
+    let nekretnina = nekretnine.find(el => el.id == req.params.id);
+
+    if (!nekretnina) {
+        return res.status(404).send("Nekretnina nije pronađena");
+    }
+
+    // Renderuje view makeupit.ejs sa nazivom i id nekretnine
+    res.render("makeupit.ejs", {
+        id: nekretnina.id,
+        naziv: nekretnina.naziv,
+        aktivnaStranica:""
+    });
+});
+
+app.get("/logout", (req, res) => {
   // Check if the user is authenticated
   if (!req.session.username) {
     // User is not logged in
@@ -216,15 +231,18 @@ app.post("/logout", (req, res) => {
       console.error("Error during logout:", err);
       res.status(500).json({ greska: "Internal Server Error" });
     } else {
-      res.status(200).json({ poruka: "Uspješno ste se odjavili" });
+      res.render("prijava.ejs");;
     }
   });
+  res.render("prijava.ejs");
 });
 
 /*
 Returns currently logged user data. First takes the username from the session and grabs other data
 from the .json file.
 */
+
+//profil.ejs
 app.get("/korisnik", async (req, res) => {
   // Check if the username is present in the session
   if (!req.session.username) {
@@ -242,10 +260,7 @@ app.get("/korisnik", async (req, res) => {
     // Find the user by username
     const user = users.find((u) => u.username === username);
 
-    if (!user) {
-      // User not found (should not happen if users are correctly managed)
-      return res.status(401).json({ greska: "Neautorizovan pristup" });
-    }
+  
 
     // Send user data
     const userData = {
@@ -256,8 +271,7 @@ app.get("/korisnik", async (req, res) => {
       password: user.password, // Should exclude the password for security reasons
     };
 
-   
-    res.render("profil.ejs", { user: userData });
+    res.render("profil.ejs", { user: userData, aktivnaStranica:"korisnik" });
   } catch (error) {
     console.error("Error fetching user data:", error);
     res.status(500).json({ greska: "Internal Server Error" });
@@ -267,7 +281,7 @@ app.get("/korisnik", async (req, res) => {
 /*
 Allows logged user to make a request for a property
 */
-app.post("/upit", async (req, res) => {
+app.post("/upit/:id", async (req, res) => {
   // Check if the user is authenticated
   if (!req.session.username) {
     // User is not logged in
@@ -275,7 +289,7 @@ app.post("/upit", async (req, res) => {
   }
 
   // Get data from the request body
-  const { nekretnina_id, tekst_upita } = req.body;
+  const {tekst_upita } = req.body;
 
   try {
     // Read user data from the JSON file
@@ -291,14 +305,14 @@ app.post("/upit", async (req, res) => {
 
     // Check if the property with nekretnina_id exists
     const nekretnina = nekretnine.find(
-      (property) => property.id === nekretnina_id
+      (property) => property.id == req.params.id
     );
-
+    console.log(nekretnina);
     if (!nekretnina) {
       // Property not found
       return res
         .status(400)
-        .json({ greska: `Nekretnina sa id-em ${nekretnina_id} ne postoji` });
+        .json({ greska: `Nekretnina sa id-em ${req.params.id} ne postoji` });
     }
 
     let provjera = nekretnina.upiti.filter((obj) => {
@@ -319,54 +333,37 @@ app.post("/upit", async (req, res) => {
 
     // Save the updated properties data back to the JSON file
     await saveJsonFile("nekretnine", nekretnine);
-
-    res.status(200).json({ poruka: "Upit je uspješno dodan" });
+    nekretnina["aktivnaStranica"]="";
+     res.render("detalji.ejs", nekretnina);
   } catch (error) {
     console.error("Error processing query:", error);
     res.status(500).json({ greska: "Internal Server Error" });
   }
 });
 app.get("/upiti/moji", async (req, res) => {
-  // Provjera da li je korisnik loginovan
   if (!req.session.username) {
     return res.status(401).json({ greska: "Neautorizovan pristup" });
   }
 
   try {
-    // Učitaj korisnike i nekretnine iz JSON fajlova
     const users = await readJsonFile("korisnici");
     const nekretnine = await readJsonFile("nekretnine");
 
-    // Pronađi loginovanog korisnika
-    const loggedInUser = users.find(
-      (user) => user.username === req.session.username
-    );
+    const loggedInUser = users.find(u => u.username === req.session.username);
+    if (!loggedInUser) return res.status(401).json({ greska: "Neautorizovan pristup" });
 
-    if (!loggedInUser) {
-      return res.status(401).json({ greska: "Neautorizovan pristup" });
-    }
-
-    // Prikupi sve upite tog korisnika
     const mojiUpiti = [];
-
-    nekretnine.forEach((nekretnina) => {
-      nekretnina.upiti.forEach((upit) => {
-        if (upit.korisnik_id === loggedInUser.id) {
-          mojiUpiti.push({
-            id_nekretnine: nekretnina.id,
-            tekst_upita: upit.tekst_upita,
-          });
+    nekretnine.forEach(n => {
+      n.upiti.forEach(u => {
+        if(u.korisnik_id === loggedInUser.id){
+          mojiUpiti.push({ id_nekretnine: n.id, tekst_upita: u.tekst_upita });
         }
       });
     });
 
-    if (mojiUpiti.length === 0) {
-      return res.status(404).json([]);
-    }
-
-    res.status(200).json(mojiUpiti);
+    res.render("mojiupiti.ejs", { mojiUpiti,aktivnaStranica:"" });
   } catch (error) {
-    console.error("Greška prilikom dohvaćanja upita:", error);
+    console.error(error);
     res.status(500).json({ greska: "Internal Server Error" });
   }
 });
@@ -374,6 +371,17 @@ app.get("/upiti/moji", async (req, res) => {
 /*
 Updates any user field
 */
+
+app.get("/azurirajkorisnik",async (req,res)=>{
+  if(req.session.username){
+     const users = await readJsonFile("korisnici");
+      const user = users.find(
+      (user) => user.username === req.session.username
+    );
+    res.render("azurirajkorisnik.ejs",{aktivnaStranica:"",user});
+  }
+  else  return res.status(401).json({ greska: "Neautorizovan pristup" });
+})
 app.put("/korisnik", async (req, res) => {
   // Check if the user is authenticated
   if (!req.session.username) {
@@ -410,7 +418,7 @@ app.put("/korisnik", async (req, res) => {
 
     // Save the updated user data back to the JSON file
     await saveJsonFile("korisnici", users);
-    res.status(200).json({ poruka: "Podaci su uspješno ažurirani" });
+    res.render("profil.ejs",{aktivnaStranica:"korisnik",loggedInUser})
   } catch (error) {
     console.error("Error updating user data:", error);
     res.status(500).json({ greska: "Internal Server Error" });
@@ -420,21 +428,24 @@ app.put("/korisnik", async (req, res) => {
 /*
 Returns all properties from the file.
 */
-app.get("/nekretnine",  (req, res) => {
+app.get("/nekretnine", (req, res) => {
   try {
-    
-    res.render("nekretnine.ejs",{aktivnaStranica:"nekretnine"});
+    res.render("nekretnine.ejs", { aktivnaStranica: "nekretnine" });
   } catch (error) {
     console.error("Error fetching properties data:", error);
     res.status(500).json({ greska: "Internal Server Error" });
   }
 });
-app.get("/statistike",(req,res)=>{
-  res.render("statistika.ejs",{ aktivnaStranica: "statistike" });
-})
-app.get("/vijesti",(req,res)=>{
-res.render("vijesti.ejs",{ aktivnaStranica: "vijesti" });
-})
+app.get("/statistike", (req, res) => {
+  if(req.session.username)
+  res.render("statistika.ejs", { aktivnaStranica: "statistike" });
+else{
+  res.json({ greska: "Neautorizovan pristup" });
+}
+});
+app.get("/vijesti", (req, res) => {
+  res.render("vijesti.ejs", { aktivnaStranica: "vijesti" });
+});
 /* ----------------- NEKRETNINE ADDED ROUTES ----------------- */
 app.get("/nekretnine/top5", async (req, res) => {
   try {
