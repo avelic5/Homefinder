@@ -7,7 +7,20 @@ const { read } = require("fs");
 const app = express();
 const PORT = 3000;
 const methodOverride = require('method-override');
+const { Pool } = require("pg");
+const env = require("dotenv");
+env.config();
 
+const pool = new Pool({
+  user: process.env.USER,       
+  host: process.env.HOST,
+  database: process.env.DATABASE,  
+  password: process.env.PASSWORD,
+  port: 5432,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 
 app.use(methodOverride('_method'));
@@ -62,26 +75,45 @@ routes.forEach(({ route, file }) => {
 /* ----------- SERVING OTHER ROUTES --------------- */
 
 // Async function for reading json data from data folder
-async function readJsonFile(filename) {
-  const filePath = path.join(__dirname, "data", `${filename}.json`);
+async function readTable(tableName) {
   try {
-    const rawdata = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(rawdata);
+    const res = await pool.query(`SELECT * FROM ${tableName}`);
+    return res.rows; // vraća niz objekata
   } catch (error) {
+    console.error(`Greška pri čitanju tabele ${tableName}:`, error);
     throw error;
   }
 }
 
-// Async function for reading json data from data folder
-async function saveJsonFile(filename, data) {
-  const filePath = path.join(__dirname, "data", `${filename}.json`);
+// Spremanje/promenjena podataka u tabelu
+// data treba biti objekat sa ključem 'id' za UPDATE ili bez id za INSERT
+async function saveTable(tableName, data) {
   try {
-    await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf-8");
+    if (data.id) {
+      // UPDATE
+      const columns = Object.keys(data).filter(k => k !== "id");
+      const setString = columns.map((col, i) => `${col}=$${i+1}`).join(", ");
+      const values = columns.map(col => data[col]);
+      values.push(data.id); // za WHERE id=$n
+      await pool.query(
+        `UPDATE ${tableName} SET ${setString} WHERE id=$${values.length}`,
+        values
+      );
+    } else {
+      // INSERT
+      const columns = Object.keys(data);
+      const values = Object.values(data);
+      const placeholders = columns.map((_, i) => `$${i+1}`).join(", ");
+      await pool.query(
+        `INSERT INTO ${tableName} (${columns.join(", ")}) VALUES (${placeholders})`,
+        values
+      );
+    }
   } catch (error) {
+    console.error(`Greška pri spremanju u tabelu ${tableName}:`, error);
     throw error;
   }
 }
-
 /*
 Checks if the user exists and if the password is correct based on korisnici.json data. 
 If the data is correct, the username is saved in the session and a success message is sent.
@@ -94,20 +126,35 @@ app.get("/", (req, res) => {
     res.render("nekretnine.ejs", { aktivnaStranica: "nekretnine" });
   }
 });
-
+// Detalji nekretnine
 app.get("/detalji/:id", async (req, res) => {
-  let nekretnine = await readJsonFile("nekretnine");
-  let nekretnina = nekretnine.find(el=>{
-    return el.id==req.params.id;
-  });
+  try {
+    // Učitaj sve nekretnine iz baze
+    const nekretnine = await readTable("nekretnine");
 
-  nekretnina.aktivnaStranica = "nekretnine";
-  res.render("detalji.ejs", nekretnina);
+    // Pronađi nekretninu po ID-u
+    const nekretnina = nekretnine.find(el => el.id == req.params.id);
+
+    if (!nekretnina) {
+      return res.status(404).send("Nekretnina nije pronađena");
+    }
+
+    // Dodaj aktivnu stranicu
+    nekretnina.aktivnaStranica = "nekretnine";
+
+    res.render("detalji.ejs", nekretnina);
+  } catch (error) {
+    console.error("Greška pri učitavanju detalja nekretnine:", error);
+    res.status(500).json({ greska: "Internal Server Error" });
+  }
 });
 
+// Signup GET
 app.get("/signup", (req, res) => {
   res.render("signup.ejs");
 });
+
+// Signup POST
 app.post("/signup", async (req, res) => {
   const { ime, prezime, username, password } = req.body;
 
@@ -115,126 +162,111 @@ app.post("/signup", async (req, res) => {
     return res.send("Sva polja su obavezna!");
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  // Ovdje ide kod za spremanje korisnika u bazu
-  // npr: const newUser = await db.Users.create({ username, email, password: hashedPassword });
-  const users = await readJsonFile("korisnici");
-users.push( {
-    id: users.length+1,
-    ime,
-    prezime,
-    username,
-    password: hashedPassword,
-  });
-  saveJsonFile("korisnici",users);
-
-  req.session.username = username;
-
-  res.redirect("/");
-});
-
-app.post("/login", async (req, res) => {
-  const jsonObj = req.body;
-
   try {
-    const data = await fs.readFile(
-      path.join(__dirname, "data", "korisnici.json"),
-      "utf-8"
-    );
-    const korisnici = JSON.parse(data);
-    let found = false;
+    // Hashiraj lozinku
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    for (const korisnik of korisnici) {
-      if (korisnik.username == jsonObj.username) {
-        const isPasswordMatched = await bcrypt.compare(
-          jsonObj.password,
-          korisnik.password
-        );
-        if (req.session.lockUntil && Date.now() < req.session.lockUntil) {
-          console.log("Korisnik je još uvijek blokiran!");
+    // Napravi novi korisnički objekat
+    const newUser = {
+      ime,
+      prezime,
+      username,
+      password: hashedPassword
+    };
 
-          await fs.appendFile(
-            "prijave.txt",
-            `${new Date()} - ${korisnik.username} - status: neuspješno \n`
-          );
+    // Spremi korisnika u bazu
+    await saveTable("korisnici", newUser);
 
-          return res.status(429).json({
-            greska:
-              "Previse neuspjesnih pokusaja. Pokusajte ponovo za 1 minutu.",
-          });
-        } else if (isPasswordMatched) {
-          req.session.username = korisnik.username;
-          found = true;
-          req.session.broj_pokusaja_login = 0;
-          await fs.appendFile(
-            "prijave.txt",
-            `${new Date()} - ${korisnik.username} - status: uspješno \n`
-          );
-          break;
-        } else {
-          if (!req.session.broj_pokusaja_login)
-            req.session.broj_pokusaja_login = 0;
-          await fs.appendFile(
-            "prijave.txt",
-            `${new Date()} - ${korisnik.username} - status: neuspješno \n`
-          );
-          req.session.broj_pokusaja_login++;
-          if (req.session.broj_pokusaja_login === 3) {
-            req.session.lockUntil = Date.now() + 30 * 60 * 1000;
-            req.session.broj_pokusaja_login = 0;
-          }
-        }
-      }
-    }
+    // Postavi sesiju
+    req.session.username = username;
 
-    if (found) {
-      res.json({ poruka: "Uspješna prijava" });
-    } else {
-      res.json({ poruka: "Neuspješna prijava" });
-    }
+    res.redirect("/");
   } catch (error) {
-    console.error("Error during login:", error);
+    console.error("Greška pri registraciji korisnika:", error);
     res.status(500).json({ greska: "Internal Server Error" });
   }
 });
 
-// GET ruta za prikaz forme za postavljanje upita
-app.get("/makeupit/:id", async (req, res) => {
-    let nekretnine = await readJsonFile("nekretnine");
+// LOGIN
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
 
-    // Pronađi nekretninu sa prosleđenim id
-    let nekretnina = nekretnine.find(el => el.id == req.params.id);
+  try {
+    // Učitaj sve korisnike iz baze
+    const korisnici = await readTable("korisnici");
+    const korisnik = korisnici.find(u => u.username === username);
 
-    if (!nekretnina) {
-        return res.status(404).send("Nekretnina nije pronađena");
+    if (!korisnik) {
+      return res.json({ poruka: "Neuspješna prijava" });
     }
 
-    // Renderuje view makeupit.ejs sa nazivom i id nekretnine
-    res.render("makeupit.ejs", {
-        id: nekretnina.id,
-        naziv: nekretnina.naziv,
-        aktivnaStranica:""
-    });
+    // Provjera da li je korisnik blokiran
+    if (req.session.lockUntil && Date.now() < req.session.lockUntil) {
+      console.log("Korisnik je još uvijek blokiran!");
+      // Ovdje možeš dodati zapis u log fajl ako želiš
+      return res.status(429).json({
+        greska: "Previse neuspjesnih pokusaja. Pokusajte ponovo kasnije.",
+      });
+    }
+
+    const isPasswordMatched = await bcrypt.compare(password, korisnik.password);
+
+    if (isPasswordMatched) {
+      req.session.username = korisnik.username;
+      req.session.broj_pokusaja_login = 0;
+      // Opcionalno: log uspješnog logina
+      return res.json({ poruka: "Uspješna prijava" });
+    } else {
+      req.session.broj_pokusaja_login = (req.session.broj_pokusaja_login || 0) + 1;
+      // Opcionalno: log neuspjelog logina
+
+      if (req.session.broj_pokusaja_login === 3) {
+        req.session.lockUntil = Date.now() + 30 * 60 * 1000; // 30 minuta blokade
+        req.session.broj_pokusaja_login = 0;
+      }
+
+      return res.json({ poruka: "Neuspješna prijava" });
+    }
+  } catch (error) {
+    console.error("Greška pri login-u:", error);
+    res.status(500).json({ greska: "Internal Server Error" });
+  }
 });
 
+// MAKE UPIT
+app.get("/makeupit/:id", async (req, res) => {
+  try {
+    const nekretnine = await readTable("nekretnine");
+    const nekretnina = nekretnine.find(el => el.id == req.params.id);
+
+    if (!nekretnina) {
+      return res.status(404).send("Nekretnina nije pronađena");
+    }
+
+    res.render("makeupit.ejs", {
+      id: nekretnina.id,
+      naziv: nekretnina.naziv,
+      aktivnaStranica: ""
+    });
+  } catch (error) {
+    console.error("Greška pri učitavanju nekretnine za upit:", error);
+    res.status(500).json({ greska: "Internal Server Error" });
+  }
+});
+
+// LOGOUT
 app.get("/logout", (req, res) => {
-  // Check if the user is authenticated
   if (!req.session.username) {
-    // User is not logged in
     return res.status(401).json({ greska: "Neautorizovan pristup" });
   }
 
-  // Clear all information from the session
-  req.session.destroy((err) => {
+  req.session.destroy(err => {
     if (err) {
-      console.error("Error during logout:", err);
-      res.status(500).json({ greska: "Internal Server Error" });
-    } else {
-      res.render("prijava.ejs");;
+      console.error("Greška pri logout-u:", err);
+      return res.status(500).json({ greska: "Internal Server Error" });
     }
+    res.render("prijava.ejs");
   });
-  res.render("prijava.ejs");
 });
 
 /*
@@ -243,184 +275,168 @@ from the .json file.
 */
 
 //profil.ejs
+// PROFIL KORISNIKA
 app.get("/korisnik", async (req, res) => {
-  // Check if the username is present in the session
   if (!req.session.username) {
-    // User is not logged in
     return res.status(401).json({ greska: "Neautorizovan pristup" });
   }
 
-  // User is logged in, fetch additional user data
-  const username = req.session.username;
-
   try {
-    // Read user data from the JSON file
-    const users = await readJsonFile("korisnici");
+    // Učitaj korisnike iz baze
+    const users = await readTable("korisnici");
 
-    // Find the user by username
-    const user = users.find((u) => u.username === username);
+    // Pronađi trenutno prijavljenog korisnika
+    const user = users.find(u => u.username === req.session.username);
 
-  
+    if (!user) {
+      return res.status(404).json({ greska: "Korisnik nije pronađen" });
+    }
 
-    // Send user data
     const userData = {
       id: user.id,
       ime: user.ime,
       prezime: user.prezime,
       username: user.username,
-      password: user.password, // Should exclude the password for security reasons
+      password: user.password // po želji možeš izbaciti iz rendera radi sigurnosti
     };
 
-    res.render("profil.ejs", { user: userData, aktivnaStranica:"korisnik" });
+    res.render("profil.ejs", { user: userData, aktivnaStranica: "korisnik" });
   } catch (error) {
-    console.error("Error fetching user data:", error);
+    console.error("Greška pri učitavanju korisnika:", error);
     res.status(500).json({ greska: "Internal Server Error" });
   }
 });
 
-/*
-Allows logged user to make a request for a property
-*/
+// POST UPIT
 app.post("/upit/:id", async (req, res) => {
-  // Check if the user is authenticated
   if (!req.session.username) {
-    // User is not logged in
     return res.status(401).json({ greska: "Neautorizovan pristup" });
   }
 
-  // Get data from the request body
-  const {tekst_upita } = req.body;
+  const { tekst_upita } = req.body;
 
   try {
-    // Read user data from the JSON file
-    const users = await readJsonFile("korisnici");
+    // Učitaj korisnike i nekretnine iz baze
+    const users = await readTable("korisnici");
+    const nekretnine = await readTable("nekretnine");
 
-    // Read properties data from the JSON file
-    const nekretnine = await readJsonFile("nekretnine");
+    // Pronađi prijavljenog korisnika
+    const loggedInUser = users.find(u => u.username === req.session.username);
+    if (!loggedInUser) {
+      return res.status(404).json({ greska: "Korisnik nije pronađen" });
+    }
 
-    // Find the user by username
-    const loggedInUser = users.find(
-      (user) => user.username === req.session.username
-    );
-
-    // Check if the property with nekretnina_id exists
-    const nekretnina = nekretnine.find(
-      (property) => property.id == req.params.id
-    );
-    console.log(nekretnina);
+    // Pronađi nekretninu
+    const nekretnina = nekretnine.find(n => n.id == req.params.id);
     if (!nekretnina) {
-      // Property not found
-      return res
-        .status(400)
-        .json({ greska: `Nekretnina sa id-em ${req.params.id} ne postoji` });
+      return res.status(400).json({ greska: `Nekretnina sa id-em ${req.params.id} ne postoji` });
     }
 
-    let provjera = nekretnina.upiti.filter((obj) => {
-      return obj.korisnik_id === loggedInUser.id;
-    });
+    // Inicijaliziraj upite ako ne postoji
+    nekretnina.upiti = nekretnina.upiti || [];
 
+    // Provjeri broj upita korisnika za tu nekretninu
+    const provjera = nekretnina.upiti.filter(u => u.korisnik_id === loggedInUser.id);
     if (provjera.length >= 3) {
-      return res
-        .status(429)
-        .json({ greska: "Previse upita za istu nekretninu." });
+      return res.status(429).json({ greska: "Previse upita za istu nekretninu." });
     }
 
-    // Add a new query to the property's queries array
+    // Dodaj novi upit
     nekretnina.upiti.push({
       korisnik_id: loggedInUser.id,
-      tekst_upita: tekst_upita,
+      tekst_upita
     });
 
-    // Save the updated properties data back to the JSON file
-    await saveJsonFile("nekretnine", nekretnine);
-    nekretnina["aktivnaStranica"]="";
-     res.render("detalji.ejs", nekretnina);
+    // Spremi promjene u bazu
+    await saveTable("nekretnine", nekretnina);
+
+    // Render detalja nekretnine
+    nekretnina.aktivnaStranica = "";
+    res.render("detalji.ejs", nekretnina);
   } catch (error) {
-    console.error("Error processing query:", error);
+    console.error("Greška pri dodavanju upita:", error);
     res.status(500).json({ greska: "Internal Server Error" });
   }
 });
+// GET MOJI UPITI
 app.get("/upiti/moji", async (req, res) => {
   if (!req.session.username) {
     return res.status(401).json({ greska: "Neautorizovan pristup" });
   }
 
   try {
-    const users = await readJsonFile("korisnici");
-    const nekretnine = await readJsonFile("nekretnine");
+    const users = await readTable("korisnici");
+    const nekretnine = await readTable("nekretnine");
 
     const loggedInUser = users.find(u => u.username === req.session.username);
     if (!loggedInUser) return res.status(401).json({ greska: "Neautorizovan pristup" });
 
     const mojiUpiti = [];
     nekretnine.forEach(n => {
+      n.upiti = n.upiti || [];
       n.upiti.forEach(u => {
-        if(u.korisnik_id === loggedInUser.id){
+        if (u.korisnik_id === loggedInUser.id) {
           mojiUpiti.push({ id_nekretnine: n.id, tekst_upita: u.tekst_upita });
         }
       });
     });
 
-    res.render("mojiupiti.ejs", { mojiUpiti,aktivnaStranica:"" });
+    res.render("mojiupiti.ejs", { mojiUpiti, aktivnaStranica: "" });
   } catch (error) {
-    console.error(error);
+    console.error("Greška pri učitavanju mojih upita:", error);
     res.status(500).json({ greska: "Internal Server Error" });
   }
 });
 
-/*
-Updates any user field
-*/
-
-app.get("/azurirajkorisnik",async (req,res)=>{
-  if(req.session.username){
-     const users = await readJsonFile("korisnici");
-      const user = users.find(
-      (user) => user.username === req.session.username
-    );
-    res.render("azurirajkorisnik.ejs",{aktivnaStranica:"",user});
-  }
-  else  return res.status(401).json({ greska: "Neautorizovan pristup" });
-})
-app.put("/korisnik", async (req, res) => {
-  // Check if the user is authenticated
+// GET AZURIRAJ KORISNIK
+app.get("/azurirajkorisnik", async (req, res) => {
   if (!req.session.username) {
-    // User is not logged in
     return res.status(401).json({ greska: "Neautorizovan pristup" });
   }
 
-  // Get data from the request body
+  try {
+    const users = await readTable("korisnici");
+    const user = users.find(u => u.username === req.session.username);
+
+    if (!user) return res.status(404).json({ greska: "Korisnik nije pronađen" });
+
+    res.render("azurirajkorisnik.ejs", { aktivnaStranica: "", user });
+  } catch (error) {
+    console.error("Greška pri učitavanju korisnika za azuriranje:", error);
+    res.status(500).json({ greska: "Internal Server Error" });
+  }
+});
+
+// PUT KORISNIK
+app.put("/korisnik", async (req, res) => {
+  if (!req.session.username) {
+    return res.status(401).json({ greska: "Neautorizovan pristup" });
+  }
+
   const { ime, prezime, username, password } = req.body;
 
   try {
-    // Read user data from the JSON file
-    const users = await readJsonFile("korisnici");
-
-    // Find the user by username
-    const loggedInUser = users.find(
-      (user) => user.username === req.session.username
-    );
+    const users = await readTable("korisnici");
+    const loggedInUser = users.find(u => u.username === req.session.username);
 
     if (!loggedInUser) {
-      // User not found (should not happen if users are correctly managed)
       return res.status(401).json({ greska: "Neautorizovan pristup" });
     }
 
-    // Update user data with the provided values
+    // Ažuriranje podataka
     if (ime) loggedInUser.ime = ime;
     if (prezime) loggedInUser.prezime = prezime;
     if (username) loggedInUser.username = username;
     if (password) {
-      // Hash the new password
-      const hashedPassword = await bcrypt.hash(password, 10);
-      loggedInUser.password = hashedPassword;
+      loggedInUser.password = await bcrypt.hash(password, 10);
     }
 
-    // Save the updated user data back to the JSON file
-    await saveJsonFile("korisnici", users);
-    res.render("profil.ejs",{aktivnaStranica:"korisnik",loggedInUser})
+    // Spremi u bazu
+    await saveTable("korisnici", loggedInUser);
+
+    res.render("profil.ejs", { aktivnaStranica: "korisnik", user: loggedInUser });
   } catch (error) {
-    console.error("Error updating user data:", error);
+    console.error("Greška pri ažuriranju korisnika:", error);
     res.status(500).json({ greska: "Internal Server Error" });
   }
 });
@@ -428,182 +444,179 @@ app.put("/korisnik", async (req, res) => {
 /*
 Returns all properties from the file.
 */
+// GET /nekretnine - prikaz stranice sa svim nekretninama
 app.get("/nekretnine", (req, res) => {
   try {
     res.render("nekretnine.ejs", { aktivnaStranica: "nekretnine" });
   } catch (error) {
-    console.error("Error fetching properties data:", error);
+    console.error("Greška pri prikazu nekretnina:", error);
     res.status(500).json({ greska: "Internal Server Error" });
   }
 });
+
+// GET /statistike - prikaz statistika (samo za prijavljene korisnike)
 app.get("/statistike", (req, res) => {
-  if(req.session.username)
-  res.render("statistika.ejs", { aktivnaStranica: "statistike" });
-else{
-  res.json({ greska: "Neautorizovan pristup" });
-}
+  if (req.session.username) {
+    res.render("statistika.ejs", { aktivnaStranica: "statistike" });
+  } else {
+    res.json({ greska: "Neautorizovan pristup" });
+  }
 });
+
+// GET /vijesti - prikaz vijesti
 app.get("/vijesti", (req, res) => {
   res.render("vijesti.ejs", { aktivnaStranica: "vijesti" });
 });
+
 /* ----------------- NEKRETNINE ADDED ROUTES ----------------- */
+
+// GET /nekretnine/top5 - top 5 nekretnina po lokaciji
 app.get("/nekretnine/top5", async (req, res) => {
   try {
     if (!req.query.lokacija) throw new Error("Query is needed!");
-    let nekretnineData = await readJsonFile("nekretnine");
-    nekretnineData = nekretnineData.filter((item) => {
-      return item.lokacija.toLowerCase() === req.query.lokacija;
-    });
-    nekretnineData.sort(function (a, b) {
-      return Date.parse(a.datum_objave) > Date.parse(b.datum_objave);
-    });
+
+    let nekretnineData = await readTable("nekretnine");
+
+    nekretnineData = nekretnineData.filter(
+      (item) => item.lokacija.toLowerCase() === req.query.lokacija.toLowerCase()
+    );
+
+    nekretnineData.sort((a, b) => Date.parse(b.datum_objave) - Date.parse(a.datum_objave));
+
     res.json(nekretnineData.slice(0, 5));
   } catch (error) {
-    console.error("Error while routing /nekretnine/top5:", error);
+    console.error("Greška pri /nekretnine/top5:", error);
     res.status(500).json({ greska: error.message });
   }
 });
+
+// GET /nekretnina/:id - detalji nekretnine sa do 3 upita
 app.get("/nekretnina/:id", async (req, res) => {
-  let nekretnineData = await readJsonFile("nekretnine");
-  let obj = nekretnineData.find((elem) => elem.id == req.params.id);
-  obj.upiti = obj.upiti
-    .sort(function (a, b) {
-      return a.id < b.id;
-    })
-    .slice(0, 3);
-  res.json(obj);
+  try {
+    let nekretnineData = await readTable("nekretnine");
+    let obj = nekretnineData.find((elem) => elem.id == req.params.id);
+
+    if (!obj) return res.status(404).json({ greska: "Nekretnina nije pronađena" });
+
+    obj.upiti = (obj.upiti || [])
+      .sort((a, b) => b.id - a.id) // sort descending po id
+      .slice(0, 3);
+
+    res.json(obj);
+  } catch (error) {
+    console.error("Greška pri /nekretnina/:id:", error);
+    res.status(500).json({ greska: "Internal Server Error" });
+  }
 });
 
+// GET /next/upiti/nekretnina/:id - paginacija upita
 app.get("/next/upiti/nekretnina/:id", async (req, res) => {
   try {
     if (!req.query.page) throw new Error("Query is needed!");
-    let nekretnineData = await readJsonFile("nekretnine");
     let page = Number(req.query.page);
 
-    let index = nekretnineData.findIndex(
-      (elem) => elem.id === Number(req.params.id)
-    );
+    let nekretnineData = await readTable("nekretnine");
+
+    let index = nekretnineData.findIndex((elem) => elem.id == Number(req.params.id));
+    if (index === -1) return res.status(404).json({ greska: "Nekretnina nije pronađena" });
 
     let rez = [];
     for (let i = index + page * 3; i < nekretnineData.length; i++) {
-      rez.push(nekretnineData[i].upiti);
+      rez.push(nekretnineData[i].upiti || []);
     }
+
     if (rez.length === 0) res.status(404).json(rez);
     else res.status(200).json(rez);
   } catch (error) {
-    console.error("Error while routing /nekretnine/:id", error);
+    console.error("Greška pri /next/upiti/nekretnina/:id:", error);
     res.status(500).json({ greska: error.message });
   }
 });
 
 /* ----------------- MARKETING ROUTES ----------------- */
 
-// Route that increments value of pretrage for one based on list of ids in nizNekretnina
+/* ----------------- MARKETING ROUTES ----------------- */
+
+// POST /marketing/nekretnine - povećava broj pretraga za više nekretnina
 app.post("/marketing/nekretnine", async (req, res) => {
   const { nizNekretnina } = req.body;
 
   try {
-    // Load JSON data
-    let preferencije = await readJsonFile("preferencije");
+    let preferencije = await readTable("preferencije");
 
-    // Check format
-    if (!preferencije || !Array.isArray(preferencije)) {
-      console.error("Neispravan format podataka u preferencije.json.");
-      res.status(500).json({ error: "Internal Server Error" });
-      return;
-    }
-
-    // Init object for search
-    preferencije = preferencije.map((nekretnina) => {
-      nekretnina.pretrage = nekretnina.pretrage || 0;
-      return nekretnina;
-    });
-
-    // Update atribute pretraga
     nizNekretnina.forEach((id) => {
       const nekretnina = preferencije.find((item) => item.id === id);
       if (nekretnina) {
-        nekretnina.pretrage += 1;
+        nekretnina.pretrage = (nekretnina.pretrage || 0) + 1;
       }
     });
 
-    // Save JSON file
-    await saveJsonFile("preferencije", preferencije);
+    await saveTable("preferencije", preferencije);
 
     res.status(200).json({});
   } catch (error) {
-    console.error("Greška prilikom čitanja ili pisanja JSON datoteke:", error);
+    console.error("Greška prilikom ažuriranja pretraga:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
+// POST /marketing/nekretnina/:id - povećava broj klikova na pojedinačnoj nekretnini
 app.post("/marketing/nekretnina/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Read JSON
-    const preferencije = await readJsonFile("preferencije");
+    const preferencije = await readTable("preferencije");
 
-    // Finding the needed objects based on id
-    const nekretninaData = preferencije.find(
-      (item) => item.id === parseInt(id, 10)
-    );
+    const nekretninaData = preferencije.find((item) => item.id === parseInt(id, 10));
 
     if (nekretninaData) {
-      // Update clicks
       nekretninaData.klikovi = (nekretninaData.klikovi || 0) + 1;
+      await saveTable("preferencije", preferencije);
 
-      // Save JSON file
-      await saveJsonFile("preferencije", preferencije);
-
-      res
-        .status(200)
-        .json({ success: true, message: "Broj klikova ažuriran." });
+      res.status(200).json({ success: true, message: "Broj klikova ažuriran." });
     } else {
       res.status(404).json({ error: "Nekretnina nije pronađena." });
     }
   } catch (error) {
-    console.error("Greška prilikom čitanja ili pisanja JSON datoteke:", error);
+    console.error("Greška prilikom ažuriranja klikova:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
+// POST /marketing/osvjezi/pretrage - vraća trenutne pretrage za zadane nekretnine
 app.post("/marketing/osvjezi/pretrage", async (req, res) => {
   const { nizNekretnina } = req.body || { nizNekretnina: [] };
 
   try {
-    // Read JSON
-    const preferencije = await readJsonFile("preferencije");
+    const preferencije = await readTable("preferencije");
 
-    // Finding the needed objects based on id
     const promjene = nizNekretnina.map((id) => {
       const nekretninaData = preferencije.find((item) => item.id === id);
-      return { id, pretrage: nekretninaData ? nekretninaData.pretrage : 0 };
+      return { id, pretrage: nekretninaData ? nekretninaData.pretrage || 0 : 0 };
     });
 
     res.status(200).json({ nizNekretnina: promjene });
   } catch (error) {
-    console.error("Greška prilikom čitanja ili pisanja JSON datoteke:", error);
+    console.error("Greška prilikom osvježavanja pretraga:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
+// POST /marketing/osvjezi/klikovi - vraća trenutne klikove za zadane nekretnine
 app.post("/marketing/osvjezi/klikovi", async (req, res) => {
   const { nizNekretnina } = req.body || { nizNekretnina: [] };
 
   try {
-    // Read JSON
-    const preferencije = await readJsonFile("preferencije");
+    const preferencije = await readTable("preferencije");
 
-    // Finding the needed objects based on id
     const promjene = nizNekretnina.map((id) => {
       const nekretninaData = preferencije.find((item) => item.id === id);
-      return { id, klikovi: nekretninaData ? nekretninaData.klikovi : 0 };
+      return { id, klikovi: nekretninaData ? nekretninaData.klikovi || 0 : 0 };
     });
 
     res.status(200).json({ nizNekretnina: promjene });
   } catch (error) {
-    console.error("Greška prilikom čitanja ili pisanja JSON datoteke:", error);
+    console.error("Greška prilikom osvježavanja klikova:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
