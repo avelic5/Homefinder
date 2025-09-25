@@ -282,7 +282,7 @@ app.get("/logout", (req, res) => {
       console.error("Greška pri logout-u:", err);
       return res.status(500).json({ greska: "Internal Server Error" });
     }
-    res.render("prijava.ejs");
+    res.redirect("/");
   });
 });
 
