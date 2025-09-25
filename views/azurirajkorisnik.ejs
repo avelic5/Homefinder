@@ -20,7 +20,7 @@
         <p class="username">@<%= user.username %></p>
       </div>
 
-      <form action="/korisnik" method="POST" class="profil-info">
+      <form action="/korisnik" method="POST" class="profil-info" enctype="application/x-www-form-urlencoded">
         
         <input type="hidden" name="_method" value="PUT">
         <p><strong>ID:</strong> <%= user.id %></p>

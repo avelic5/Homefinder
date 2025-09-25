@@ -23,7 +23,7 @@ const pool = new Pool({
 });
 
 
-app.use(methodOverride('_method'));
+
 app.use(
   session({
     secret: "tajna sifra",
@@ -39,6 +39,12 @@ app.use(express.static(__dirname + "/public"));
 // Enable JSON parsing without body-parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride(function (req, res) {
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    return req.body._method;
+  }
+}));
+
 
 
 /* ---------------- SERVING HTML -------------------- */
@@ -352,7 +358,7 @@ app.post("/upit/:id", async (req, res) => {
 
     // Render detalja nekretnine
     nekretnina.aktivnaStranica = "";
-    res.render("detalji.ejs", nekretnina);
+    res.redirect(`/detalji/${nekretnina.id}`);
   } catch (error) {
     console.error("Greška pri dodavanju upita:", error);
     res.status(500).json({ greska: "Internal Server Error" });
@@ -427,7 +433,7 @@ app.put("/korisnik", async (req, res) => {
     }
 
     // Spremi u bazu
-    await saveTable("korisnici", loggedInUser);
+    await pool.query("UPDATE korisnici SET ime=$1, prezime=$2, username=$3, password=$4 WHERE id=$5",[ime,prezime,username,password,loggedInUser.id]);
 
     res.render("profil.ejs", { aktivnaStranica: "korisnik", user: loggedInUser });
   } catch (error) {
