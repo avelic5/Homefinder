@@ -57,7 +57,7 @@ async function serveHTMLFile(req, res, fileName) {
     res.send(content);
   } catch (error) {
     console.error("Error serving HTML file:", error);
-    res.status(500).json({ greska: "Internal Server Error" });
+   res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 }
 
@@ -87,7 +87,7 @@ async function readTable(tableName) {
     return res.rows; // vraća niz objekata
   } catch (error) {
     console.error(`Greška pri čitanju tabele ${tableName}:`, error);
-    throw error;
+    throw new Error(`Greška pri čitanju tabele ${tableName}`);
   }
 }
 
@@ -117,7 +117,7 @@ async function saveTable(tableName, data) {
     }
   } catch (error) {
     console.error(`Greška pri spremanju u tabelu ${tableName}:`, error);
-    throw error;
+    throw new Error(`Greška pri čitanju tabele ${tableName}`);
   }
 }
 /*
@@ -142,7 +142,7 @@ app.get("/detalji/:id", async (req, res) => {
     const nekretnina = nekretnine.find(el => el.id == req.params.id);
 
     if (!nekretnina) {
-      return res.status(404).send("Nekretnina nije pronađena");
+      return res.status(404).render("error.ejs",{message:"Nekretnina nije pronadjena",vratigdje:"nekretnine",path:"/nekretnine"});
     }
 
     // Dodaj aktivnu stranicu
@@ -154,7 +154,7 @@ app.get("/detalji/:id", async (req, res) => {
     res.render("detalji.ejs", nekretnina);
   } catch (error) {
     console.error("Greška pri učitavanju detalja nekretnine:", error);
-    res.status(500).json({ greska: "Internal Server Error" });
+   res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
@@ -172,6 +172,12 @@ app.post("/signup", async (req, res) => {
   }
 
   try {
+    // Provjeri da li korisnik sa tim username-om već postoji
+    const {rows:existingUser} = await pool.query("SELECT username FROM korisnici where username=$1",[username]);
+    if (existingUser.length!=0) {
+     return res.status(500).render("error.ejs", { message: "Korisnik sa tim username već postoji", vratigdje: "SignUp", path: "/signup" });
+    }
+
     // Hashiraj lozinku
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -184,7 +190,7 @@ app.post("/signup", async (req, res) => {
     };
 
     // Spremi korisnika u bazu
-    await saveTable("korisnici", newUser);
+    await pool.query("INSERT INTO korisnici(ime,prezime,username,password) VALUES ($1,$2,$3,$4)",[ime,prezime,username,hashedPassword]);
 
     // Postavi sesiju
     req.session.username = username;
@@ -192,9 +198,10 @@ app.post("/signup", async (req, res) => {
     res.redirect("/");
   } catch (error) {
     console.error("Greška pri registraciji korisnika:", error);
-    res.status(500).json({ greska: "Internal Server Error" });
+    res.status(500).render("error.ejs", { message: "Internal Server error", vratigdje: "Login", path: "/" });
   }
 });
+
 
 // LOGIN
 app.post("/login", async (req, res) => {
@@ -207,8 +214,9 @@ app.post("/login", async (req, res) => {
 
     if (!korisnik) {
       return res.json({ poruka: "Neuspješna prijava" });
+      
     }
-
+    
     // Provjera da li je korisnik blokiran
     if (req.session.lockUntil && Date.now() < req.session.lockUntil) {
       console.log("Korisnik je još uvijek blokiran!");
@@ -224,7 +232,7 @@ app.post("/login", async (req, res) => {
       req.session.username = korisnik.username;
       req.session.broj_pokusaja_login = 0;
       // Opcionalno: log uspješnog logina
-      return res.json({ poruka: "Uspješna prijava" });
+      return res.status(200).json({message:"Uspješna prijava"});
     } else {
       req.session.broj_pokusaja_login = (req.session.broj_pokusaja_login || 0) + 1;
       // Opcionalno: log neuspjelog logina
@@ -238,7 +246,7 @@ app.post("/login", async (req, res) => {
     }
   } catch (error) {
     console.error("Greška pri login-u:", error);
-    res.status(500).json({ greska: "Internal Server Error" });
+     res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
@@ -259,14 +267,14 @@ app.get("/makeupit/:id", async (req, res) => {
     });
   } catch (error) {
     console.error("Greška pri učitavanju nekretnine za upit:", error);
-    res.status(500).json({ greska: "Internal Server Error" });
+     res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
 // LOGOUT
 app.get("/logout", (req, res) => {
   if (!req.session.username) {
-    return res.status(401).json({ greska: "Neautorizovan pristup" });
+     res.status(401).render("error.ejs",{message:"Neautorizovan pristup",vratigdje:"Login",path:"/"});
   }
 
   req.session.destroy(err => {
@@ -287,7 +295,7 @@ from the .json file.
 // PROFIL KORISNIKA
 app.get("/korisnik", async (req, res) => {
   if (!req.session.username) {
-    return res.status(401).json({ greska: "Neautorizovan pristup" });
+   res.status(401).render("error.ejs",{message:"Neautorizovan pristup",vratigdje:"Login",path:"/"});
   }
 
   try {
@@ -312,14 +320,14 @@ app.get("/korisnik", async (req, res) => {
     res.render("profil.ejs", { user: userData, aktivnaStranica: "korisnik" });
   } catch (error) {
     console.error("Greška pri učitavanju korisnika:", error);
-    res.status(500).json({ greska: "Internal Server Error" });
+    res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
 // POST UPIT
 app.post("/upit/:id", async (req, res) => {
   if (!req.session.username) {
-    return res.status(401).json({ greska: "Neautorizovan pristup" });
+    res.status(401).render("error.ejs",{message:"Neautorizovan pristup",vratigdje:"Login",path:"/"});
   }
 
   const { tekst_upita } = req.body;
@@ -361,14 +369,14 @@ app.post("/upit/:id", async (req, res) => {
     res.redirect(`/detalji/${nekretnina.id}`);
   } catch (error) {
     console.error("Greška pri dodavanju upita:", error);
-    res.status(500).json({ greska: "Internal Server Error" });
+     res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
     
 // GET MOJI UPITI
 app.get("/upiti/moji", async (req, res) => {
   if (!req.session.username) {
-    return res.status(401).json({ greska: "Neautorizovan pristup" });
+    res.status(401).render("error.ejs",{message:"Neautorizovan pristup",vratigdje:"Login",path:"/"});
   }
 
   try {
@@ -376,7 +384,7 @@ app.get("/upiti/moji", async (req, res) => {
     const nekretnine = await readTable("nekretnine");
 
     const loggedInUser = users.find(u => u.username === req.session.username);
-    if (!loggedInUser) return res.status(401).json({ greska: "Neautorizovan pristup" });
+    if (!loggedInUser) return res.status(401).render("error.ejs",{message:"Neautorizovan pristup",vratigdje:"Login",path:"/"});
 
     const mojiUpiti = [];
     const {rows} = await pool.query("SELECT nekretnina_id, tekst_upita FROM upiti WHERE korisnik_id=$1",[loggedInUser.id]);
@@ -385,14 +393,14 @@ app.get("/upiti/moji", async (req, res) => {
     res.render("mojiupiti.ejs", { mojiUpiti:rows, aktivnaStranica: "" });
   } catch (error) {
     console.error("Greška pri učitavanju mojih upita:", error);
-    res.status(500).json({ greska: "Internal Server Error" });
+     res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
 // GET AZURIRAJ KORISNIK
 app.get("/azurirajkorisnik", async (req, res) => {
   if (!req.session.username) {
-    return res.status(401).json({ greska: "Neautorizovan pristup" });
+    return res.status(401).render("error.ejs",{message:"Neautorizovan pristup",vratigdje:"Login",path:"/"});
   }
 
   try {
@@ -404,24 +412,27 @@ app.get("/azurirajkorisnik", async (req, res) => {
     res.render("azurirajkorisnik.ejs", { aktivnaStranica: "", user });
   } catch (error) {
     console.error("Greška pri učitavanju korisnika za azuriranje:", error);
-    res.status(500).json({ greska: "Internal Server Error" });
+    res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
 // PUT KORISNIK
 app.put("/korisnik", async (req, res) => {
   if (!req.session.username) {
-    return res.status(401).json({ greska: "Neautorizovan pristup" });
+    res.status(401).render("error.ejs",{message:"Neautorizovan pristup",vratigdje:"Login",path:"/"});
   }
-
+  
   const { ime, prezime, username, password } = req.body;
-
+ const {rows:existingUser} = await pool.query("SELECT username FROM korisnici where username=$1",[username]);
+    if (existingUser.length!=0&&existingUser[0].username!=username&&existingUser.length!=1) {
+     return res.status(500).render("error.ejs", { message: "Korisnik sa tim username već postoji", vratigdje: "ažuriranje", path: "/azurirajkorisnik" });
+    }
   try {
     const users = await readTable("korisnici");
     const loggedInUser = users.find(u => u.username === req.session.username);
 
     if (!loggedInUser) {
-      return res.status(401).json({ greska: "Neautorizovan pristup" });
+      res.status(401).render("error.ejs",{message:"Neautorizovan pristup",vratigdje:"Login",path:"/"});
     }
 
     // Ažuriranje podataka
@@ -438,7 +449,7 @@ app.put("/korisnik", async (req, res) => {
     res.render("profil.ejs", { aktivnaStranica: "korisnik", user: loggedInUser });
   } catch (error) {
     console.error("Greška pri ažuriranju korisnika:", error);
-    res.status(500).json({ greska: "Internal Server Error" });
+     res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
@@ -451,7 +462,7 @@ app.get("/nekretnine", (req, res) => {
     res.render("nekretnine.ejs", { aktivnaStranica: "nekretnine" });
   } catch (error) {
     console.error("Greška pri prikazu nekretnina:", error);
-    res.status(500).json({ greska: "Internal Server Error" });
+     res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
@@ -460,7 +471,7 @@ app.get("/statistike", (req, res) => {
   if (req.session.username) {
     res.render("statistika.ejs", { aktivnaStranica: "statistike" });
   } else {
-    res.json({ greska: "Neautorizovan pristup" });
+   res.status(401).render("error.ejs",{message:"Neautorizovan pristup",vratigdje:"Login",path:"/"});
   }
 });
 
@@ -487,7 +498,7 @@ app.get("/nekretnine/top5", async (req, res) => {
     res.json(nekretnineData.slice(0, 5));
   } catch (error) {
     console.error("Greška pri /nekretnine/top5:", error);
-    res.status(500).json({ greska: error.message });
+    res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
@@ -506,7 +517,7 @@ app.get("/nekretnina/:id", async (req, res) => {
     res.json(obj);
   } catch (error) {
     console.error("Greška pri /nekretnina/:id:", error);
-    res.status(500).json({ greska: "Internal Server Error" });
+    res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
@@ -530,7 +541,7 @@ app.get("/next/upiti/nekretnina/:id", async (req, res) => {
     else res.status(200).json(rez);
   } catch (error) {
     console.error("Greška pri /next/upiti/nekretnina/:id:", error);
-    res.status(500).json({ greska: error.message });
+    res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
@@ -557,7 +568,7 @@ app.post("/marketing/nekretnine", async (req, res) => {
     res.status(200).json({});
   } catch (error) {
     console.error("Greška prilikom ažuriranja pretraga:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
@@ -580,7 +591,7 @@ app.post("/marketing/nekretnina/:id", async (req, res) => {
     }
   } catch (error) {
     console.error("Greška prilikom ažuriranja klikova:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
@@ -599,7 +610,7 @@ app.post("/marketing/osvjezi/pretrage", async (req, res) => {
     res.status(200).json({ nizNekretnina: promjene });
   } catch (error) {
     console.error("Greška prilikom osvježavanja pretraga:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
@@ -618,7 +629,7 @@ app.post("/marketing/osvjezi/klikovi", async (req, res) => {
     res.status(200).json({ nizNekretnina: promjene });
   } catch (error) {
     console.error("Greška prilikom osvježavanja klikova:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).render("error.ejs",{message:"Internal Server error",vratigdje:"Login",path:"/"});
   }
 });
 
