@@ -142,6 +142,9 @@ app.get("/detalji/:id", async (req, res) => {
     // Dodaj aktivnu stranicu
     nekretnina.aktivnaStranica = "nekretnine";
 
+    let upiti = await readTable("upiti");
+    upiti = upiti.filter(el => el.nekretnina_id==nekretnina.id);
+    nekretnina.upiti=upiti;
     res.render("detalji.ejs", nekretnina);
   } catch (error) {
     console.error("Greška pri učitavanju detalja nekretnine:", error);
@@ -319,6 +322,7 @@ app.post("/upit/:id", async (req, res) => {
     // Učitaj korisnike i nekretnine iz baze
     const users = await readTable("korisnici");
     const nekretnine = await readTable("nekretnine");
+    let upiti = await readTable("upiti");
 
     // Pronađi prijavljenog korisnika
     const loggedInUser = users.find(u => u.username === req.session.username);
@@ -335,11 +339,7 @@ app.post("/upit/:id", async (req, res) => {
     // Inicijaliziraj upite ako ne postoji
     nekretnina.upiti = nekretnina.upiti || [];
 
-    // Provjeri broj upita korisnika za tu nekretninu
-    const provjera = nekretnina.upiti.filter(u => u.korisnik_id === loggedInUser.id);
-    if (provjera.length >= 3) {
-      return res.status(429).json({ greska: "Previse upita za istu nekretninu." });
-    }
+   
 
     // Dodaj novi upit
     nekretnina.upiti.push({
@@ -348,7 +348,7 @@ app.post("/upit/:id", async (req, res) => {
     });
 
     // Spremi promjene u bazu
-    await saveTable("nekretnine", nekretnina);
+    await pool.query("INSERT INTO upiti(nekretnina_id,korisnik_id,tekst_upita) VALUES ($1,$2,$3)",[nekretnina.id,loggedInUser.id,tekst_upita]);
 
     // Render detalja nekretnine
     nekretnina.aktivnaStranica = "";
@@ -358,6 +358,7 @@ app.post("/upit/:id", async (req, res) => {
     res.status(500).json({ greska: "Internal Server Error" });
   }
 });
+    
 // GET MOJI UPITI
 app.get("/upiti/moji", async (req, res) => {
   if (!req.session.username) {
@@ -372,16 +373,10 @@ app.get("/upiti/moji", async (req, res) => {
     if (!loggedInUser) return res.status(401).json({ greska: "Neautorizovan pristup" });
 
     const mojiUpiti = [];
-    nekretnine.forEach(n => {
-      n.upiti = n.upiti || [];
-      n.upiti.forEach(u => {
-        if (u.korisnik_id === loggedInUser.id) {
-          mojiUpiti.push({ id_nekretnine: n.id, tekst_upita: u.tekst_upita });
-        }
-      });
-    });
+    const {rows} = await pool.query("SELECT nekretnina_id, tekst_upita FROM upiti WHERE korisnik_id=$1",[loggedInUser.id]);
 
-    res.render("mojiupiti.ejs", { mojiUpiti, aktivnaStranica: "" });
+
+    res.render("mojiupiti.ejs", { mojiUpiti:rows, aktivnaStranica: "" });
   } catch (error) {
     console.error("Greška pri učitavanju mojih upita:", error);
     res.status(500).json({ greska: "Internal Server Error" });
