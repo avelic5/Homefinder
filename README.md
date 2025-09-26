@@ -10,25 +10,25 @@ Welcome to **HomeFinder** – your go-to platform for browsing properties, submi
 
 ## ✨ Features
 
-### 👤 User Authentication & Profile
-- 🔒 Secure sign-up and login with bcrypt password hashing
-- 📝 View and update user profile
-- ⏱️ Session management with automatic logout after inactivity
-- 🚫 Block login attempts after multiple failed tries
+###  User Authentication & Profile
+-  Secure sign-up and login with bcrypt password hashing
+-  View and update user profile
+-  Session management with automatic logout after inactivity
+-  Block login attempts after multiple failed tries
 
-### 🏡 Property Management
-- 🏘️ Browse all properties
-- 🔍 Top 5 properties filtered by location
-- 📄 Detailed property pages with up to 3 latest inquiries
-- 📑 Submit and view inquiries (paginated)
+###  Property Management
+-  Browse all properties
+-  Top 5 properties filtered by location
+-  Detailed property pages with up to 3 latest inquiries
+-  Submit and view inquiries (paginated)
 
-### 📊 Marketing & Analytics
-- 📈 Track property searches and clicks
-- 🔄 Refresh current clicks and searches dynamically
-- 🛠️ Prepared for future marketing dashboards
+###  Marketing & Analytics
+-  Track property searches and clicks
+-  Refresh current clicks and searches dynamically
+-  Prepared for future marketing dashboards
 
-### ⚠️ Error Handling
-- ❌ Friendly error pages for unauthorized access, missing resources, and server errors
+###  Error Handling
+-  Friendly error pages for unauthorized access, missing resources, and server errors
 
 ---
 
@@ -46,11 +46,11 @@ Welcome to **HomeFinder** – your go-to platform for browsing properties, submi
 
 ## 🎨 Frontend Enhancements
 
-- 💻 **Interactive UI:** Dynamic updates for properties, inquiries, and marketing analytics
-- 🔄 **Carousel / Slideshow:** Smooth navigation through property images
-- 📊 **Statistics & Charts:** Price histograms, average square footage, and outlier detection using Chart.js
-- ✨ **CSS Animations:** Subtle transitions and hover effects enhance user experience
-- 🛠️ **Real-time Updates:** Top properties, clicks, and search stats are refreshed dynamically
+-  **Interactive UI:** Dynamic updates for properties, inquiries, and marketing analytics
+-  **Carousel / Slideshow:** Smooth navigation through property images
+-  **Statistics & Charts:** Price histograms, average square footage, and outlier detection using Chart.js
+-  **CSS Animations:** Subtle transitions and hover effects enhance user experience
+-  **Real-time Updates:** Top properties, clicks, and search stats are refreshed dynamically
 
 ---
 
