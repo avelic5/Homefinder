@@ -4,7 +4,7 @@
 
 Welcome to **HomeFinder** – your go-to platform for browsing properties, submitting inquiries, and managing your user profile. This is the **first version** of the application and is open for future improvements!  
 
-🌐 **Live Demo:** [https://homefinder-cdye.onrender.com/](https://homefinder-cdye.onrender.com/)
+
 
 ---
 
