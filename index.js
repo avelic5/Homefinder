@@ -9,18 +9,15 @@ const PORT = 3000;
 const methodOverride = require('method-override');
 const { Pool } = require("pg");
 const env = require("dotenv");
-const dns = require("dns");
-dns.setDefaultResultOrder("ipv4first");
-
 env.config();
 
 const pool = new Pool({
-  // Ako ne želiš env varove, stavi direktno string iz Supabase (POOLED)
-  connectionString: "postgresql://postgres:HomeFinder123@@db.rvhlrhxmhezcaxbstcch.supabase.co:5432/postgres",
-  ssl: { require: true, rejectUnauthorized: false },
-  connectionTimeoutMillis: 10000,
-  idleTimeoutMillis: 10000,
-  max: 10 // PgBouncer + mali pool je idealan za Render
+  user: process.env.USER,
+  host: process.env.HOST,  // .co ne .com!
+  database: process.env.DATABASE,  // Ovo je database name, ne host!
+  password: process.env.PASSWORD,
+  port: 5432,
+ 
 });
 
 
