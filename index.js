@@ -173,7 +173,9 @@ app.post("/signup", async (req, res) => {
 
   try {
     // Provjeri da li korisnik sa tim username-om već postoji
+    console.log("prije")
     const {rows:existingUser} = await pool.query("SELECT username FROM korisnici where username=$1",[username]);
+    console.log("poslije")
     if (existingUser.length!=0) {
      return res.status(500).render("error.ejs", { message: "Korisnik sa tim username već postoji", vratigdje: "SignUp", path: "/signup" });
     }
@@ -188,10 +190,10 @@ app.post("/signup", async (req, res) => {
       username,
       password: hashedPassword
     };
-console.log("prije")
+
     // Spremi korisnika u bazu
     await pool.query("INSERT INTO korisnici(ime,prezime,username,password) VALUES ($1,$2,$3,$4)",[ime,prezime,username,hashedPassword]);
-console.log("poslije")
+
     // Postavi sesiju
     req.session.username = username;
 
