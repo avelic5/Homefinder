@@ -188,10 +188,10 @@ app.post("/signup", async (req, res) => {
       username,
       password: hashedPassword
     };
-
+console.log("prije")
     // Spremi korisnika u bazu
     await pool.query("INSERT INTO korisnici(ime,prezime,username,password) VALUES ($1,$2,$3,$4)",[ime,prezime,username,hashedPassword]);
-
+console.log("poslije")
     // Postavi sesiju
     req.session.username = username;
 
