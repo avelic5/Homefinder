@@ -12,13 +12,13 @@ const env = require("dotenv");
 env.config();
 
 const pool = new Pool({
-  user: process.env.USER,       
-  host: process.env.HOST,
-  database: process.env.DATABASE,  
-  password: process.env.PASSWORD,
+  user: 'postgres',
+  host: 'db.rvhlrhxmhezcaxbstcch.supabase.co',  // .co ne .com!
+  database: 'postgres',  // Ovo je database name, ne host!
+  password: 'HomeFinder123@',
   port: 5432,
+  
 });
-
 
 
 app.use(
@@ -194,7 +194,7 @@ app.post("/signup", async (req, res) => {
 
     res.redirect("/");
   } catch (error) {
-    console.error("Greška pri registraciji korisnika:", error);
+    console.error("Greška pri registraciji korisnika:", error.message);
     res.status(500).render("error.ejs", { message: "Internal Server error", vratigdje: "Login", path: "/" });
   }
 });
