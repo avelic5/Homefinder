@@ -15,12 +15,12 @@ dns.setDefaultResultOrder("ipv4first");
 env.config();
 
 const pool = new Pool({
-  user: 'postgres',
-  host: `db.rvhlrhxmhezcaxbstcch.supabase.co`,  // .co ne .com!
-  database: 'postgres',  // Ovo je database name, ne host!
-  password: `HomeFinder123@`,
-  port: 5432,
-  ssl: { require: true, rejectUnauthorized: false }
+  // Ako ne želiš env varove, stavi direktno string iz Supabase (POOLED)
+  connectionString: "postgresql://postgres:HomeFinder123@@db.rvhlrhxmhezcaxbstcch.supabase.co:5432/postgres",
+  ssl: { require: true, rejectUnauthorized: false },
+  connectionTimeoutMillis: 10000,
+  idleTimeoutMillis: 10000,
+  max: 10 // PgBouncer + mali pool je idealan za Render
 });
 
 
