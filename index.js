@@ -12,10 +12,10 @@ const env = require("dotenv");
 env.config();
 
 const pool = new Pool({
-  user: 'postgres',
-  host: 'db.rvhlrhxmhezcaxbstcch.supabase.co',  // .co ne .com!
-  database: 'postgres',  // Ovo je database name, ne host!
-  password: 'HomeFinder123@',
+  user: process.env.USER,
+  host: process.env.HOST,  // .co ne .com!
+  database: process.env.DATABASE,  // Ovo je database name, ne host!
+  password: process.env.PASSWORD,
   port: 5432,
   
 });
