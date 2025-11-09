@@ -9,6 +9,9 @@ const PORT = 3000;
 const methodOverride = require('method-override');
 const { Pool } = require("pg");
 const env = require("dotenv");
+const dns = require("dns");
+dns.setDefaultResultOrder("ipv4first");
+
 env.config();
 
 const pool = new Pool({
@@ -17,7 +20,7 @@ const pool = new Pool({
   database: 'postgres',  // Ovo je database name, ne host!
   password: `HomeFinder123@`,
   port: 5432,
-  
+  ssl: { require: true, rejectUnauthorized: false }
 });
 
 
