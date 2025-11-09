@@ -12,14 +12,11 @@ const env = require("dotenv");
 env.config();
 
 const pool = new Pool({
-  user: process.env.USER,
-  host: process.env.HOST,  // .co ne .com!
-  database: process.env.DATABASE,  // Ovo je database name, ne host!
-  password: process.env.PASSWORD,
+  user: 'postgres',
+  host: `db.rvhlrhxmhezcaxbstcch.supabase.co`,  // .co ne .com!
+  database: 'postgres',  // Ovo je database name, ne host!
+  password: `HomeFinder123@`,
   port: 5432,
-  ssl:{
-    rejectUnauthorized:false
-  }
   
 });
 
@@ -173,9 +170,9 @@ app.post("/signup", async (req, res) => {
 
   try {
     // Provjeri da li korisnik sa tim username-om već postoji
-    console.log("prije")
+    
     const {rows:existingUser} = await pool.query("SELECT username FROM korisnici where username=$1",[username]);
-    console.log("poslije")
+    
     if (existingUser.length!=0) {
      return res.status(500).render("error.ejs", { message: "Korisnik sa tim username već postoji", vratigdje: "SignUp", path: "/signup" });
     }
